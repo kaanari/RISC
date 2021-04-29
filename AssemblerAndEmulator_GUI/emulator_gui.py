@@ -18,57 +18,6 @@ lineBarColor = QColor("#39444a")
 lineHighlightColor  = QColor("#39444a")
 
 
-class DebugButtons(QVBoxLayout):
-
-    def __init__(self):
-        super().__init__()
-        buttons = QHBoxLayout()
-
-        self.back_button = PicButton("./assets/left_arrow")
-        self.stop_run_button = PicButton("./assets/run")
-        self.forward_button = PicButton("./assets/right_arrow")
-        self.reset_button = PicButton("./assets/reset")
-
-        self.quit_debug_mode_button = PicButton("./assets/close")
-
-        self.time_slider = StepSlider()
-
-        buttons.addWidget(self.back_button)
-        buttons.addWidget(self.stop_run_button)
-        buttons.addWidget(self.forward_button)
-        buttons.addWidget(self.reset_button)
-        buttons.addWidget(self.quit_debug_mode_button)
-        buttons.addWidget(self.time_slider.slider_text)
-        buttons.addWidget(self.time_slider)
-        buttons.addWidget(self.time_slider.slider_value)
-
-        self.debug_line = QHLine()
-        self.debug_line.setStyleSheet("background-color: #126e82;")
-        self.debug_line.hide()
-
-        self.addLayout(buttons)
-        self.addWidget(self.debug_line)
-        self.hide()
-
-    def show(self):
-
-        self.back_button.show()
-        self.stop_run_button.show()
-        self.forward_button.show()
-        self.reset_button.show()
-        self.quit_debug_mode_button.show()
-        self.debug_line.show()
-        self.time_slider.show()
-
-    def hide(self):
-
-        self.back_button.hide()
-        self.stop_run_button.hide()
-        self.forward_button.hide()
-        self.reset_button.hide()
-        self.quit_debug_mode_button.hide()
-        self.debug_line.hide()
-        self.time_slider.hide()
 
 
 class PicButton(QAbstractButton):
@@ -304,14 +253,14 @@ class NumberBar(QWidget):
 
 
 class CodeWindow(QPlainTextEdit):
-    def __init__(self, parent = None):
+    def __init__(self,parent = None):
         super(CodeWindow, self).__init__(parent)
         self.labels = []
-        #self.setStyleSheet("background-color: #CFD8DC;")
+        self.code_hash = None
+        self.setMinimumHeight(300)
 
-
-        # Setup the regex engine
-        #self.cursorPositionChanged.connect(self.line_highlight)
+        self.controller = None
+        self.textChanged.connect(self.text_changed)
 
     def colorize(self):
         format = QtGui.QTextCharFormat()
@@ -531,96 +480,305 @@ class CodeWindow(QPlainTextEdit):
         self.setCurrentCharFormat(format)
         self.blockSignals(False)
 
+    # Move it to CodeBox Class
+    def set_cursor_to_line(self, line, run = False):
+
+        cursor = self.textCursor()
+
+        instruction_block = self.document().findBlockByNumber(line)
+
+        cursor.setPosition(instruction_block.position())
+        self.setTextCursor(cursor)
+
+        block_min_offset = 0
+        if block_min_offset == line:
+            self.controller.emulator_buttons.back_button.setDisabled(True)
+            self.controller.emulator_buttons.back_button.hide()
+            self.controller.emulator_buttons.back_button.show()
+
+        else:
+            if not run:
+                self.controller.emulator_buttons.back_button.setDisabled(False)
+
+        block_max_offset = self.document().lineCount() - 1
+        if block_max_offset == line:
+            self.controller.emulator_buttons.forward_button.setDisabled(True)
+            self.controller.emulator_buttons.forward_button.hide()
+            self.controller.emulator_buttons.forward_button.show()
+
+        else:
+            if not run:
+                self.controller.emulator_buttons.forward_button.setDisabled(False)
+                self.controller.emulator_buttons.stop_run_button.setDisabled(False)
+
+    # Move it to CodeBox Class
+    def text_changed(self):
+
+        hash_object = hashlib.md5(self.toPlainText().encode())
+        current_hash = str(hash_object.hexdigest())
+        self.controller.control_buttons.save_button.setDisabled(current_hash == self.code_hash)
+
+        self.controller.control_buttons.emulator_button.setDisabled(len(self.toPlainText()) == 0)
+        self.controller.control_buttons.compile_button.setDisabled(len(self.toPlainText()) == 0)
+
+        self.colorize()
+
 
 class OpenFileButton(QPushButton):
 
-    def __init__(self):
+    def __init__(self,controller):
         super().__init__("OPEN")
         self.setStyleSheet("background-color:#09424f;font-weight:bold;")
+        self.clicked.connect(self.on_click)
+        self.controller = controller
+
+    def on_click(self):
+        self.setStyleSheet("background-color:#353535;")
+
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        file_name, _ = QFileDialog.getOpenFileName(self, "File Explorer", "",
+                                                  "Assembly File (*.asm)", options=options)
+
+        self.setStyleSheet("background-color:#09424f;font-weight:bold;")
+        if file_name:
+            self.controller.file_name = file_name
+            file = open(file_name,"r+")
+            code = file.read()
+            self.controller.code_box.setPlainText(code)
+            self.controller.control_buttons.save_button.setDisabled(True)
+            self.controller.control_buttons.compile_button.setDisabled(False)
+            self.controller.control_buttons.emulator_button.setDisabled(False)
+            hash_object = hashlib.md5(code.encode())
+            self.controller.code_box.code_hash = str(hash_object.hexdigest())
+            file.close()
 
 
 class SaveButton(QPushButton):
 
-    def __init__(self):
+    def __init__(self,controller):
         super().__init__("SAVE")
 
+        self.controller = controller
 
-class MainWindow(QWidget):
+        self.setDisabled(True)
+        self.setStyleSheet("font-weight:bold;")
+        self.clicked.connect(self.on_click)
 
-    def __init__(self, parent=None):
-        super().__init__(parent)
+    def on_click(self):
 
-        self.file = None
-        self.file_name = None
-        self.code_hash = None
-        self.code = None
+        if self.controller.file_name == None:
+            options = QFileDialog.Options()
 
-        self.run_period = 1 #100ms
+            options |= QFileDialog.DontUseNativeDialog
+            file_name = QFileDialog.getSaveFileName(self, "Save File", "",
+                                                    "Assembly File (*.asm)", options=options)
 
-        self.program_counter = 0
-        self.register_values = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+            if file_name[0]:
+                file_name = file_name[0].split('.')
 
-        self.setWindowTitle("QTextEdit")
-        self.resize(720, 480)
-        self.setMinimumWidth(720)
+                if len(file_name) == 1:
+                    self.controller.file_name = file_name[0] + '.asm'
+                elif len(file_name) == 2 and file_name[1].lower() == 'asm':
+                    self.controller.file_name = file_name[0] + '.asm'
+                else:
+                    self.controller.command_line.append("Please use Assembly Extension(*.asm)")
+                    return None
 
-        self.code_box = CodeWindow()
-        self.open_button = OpenFileButton()
+            else:
+                self.command_line.append("Please enter a file name to save!")
+                return None
 
-        self.save_button = QPushButton("SAVE")
+        file = open(self.controller.file_name, "w")
+        current_code = self.controller.code_box.toPlainText()
+        file.seek(0)
+        file.write(current_code)
+        file.truncate()
+        file.close()
 
-        self.save_button.setDisabled(True)
-        self.compile_button = QPushButton("COMPILE")
-        self.save_button.setStyleSheet("font-weight:bold;")
+        hash_object = hashlib.md5(current_code.encode())
+        self.controller.code_hash = str(hash_object.hexdigest())
+        self.hide()
+        self.setDisabled(True)
+        self.show()
+        return 0
+
+
+class CompileButton(QPushButton):
+
+    def __init__(self,controller):
+        super().__init__("COMPILE")
+
+        self.controller = controller
+
         palette = QPalette()
         palette.setColor(QPalette.Button, QColor(156, 99, 0))
         palette.setColor(QPalette.ButtonText, Qt.white)
         palette.setColor(QPalette.Disabled, QPalette.Button, QColor(30, 30, 30))
         palette.setColor(QPalette.Disabled, QPalette.ButtonText, QColor(90, 90, 90))
-        self.compile_button.setPalette(palette)
-        self.compile_button.setStyleSheet("font-weight:bold;")
-        #self.compile_button.setStyleSheet("background-color:#c76400;")
-        self.compile_button.setDisabled(True)
-        self.debugger_button = QPushButton("DEBUG")
+
+        self.setPalette(palette)
+        self.setStyleSheet("font-weight:bold;")
+        self.setDisabled(True)
+
+        self.clicked.connect(self.on_click)
+
+    def on_click(self):
+
+        if self.controller.control_buttons.save_button.on_click() == None:
+            return None
+
+        asm = Assembler(self.controller.file_name)
+        self.controller.command_line.append("Compiling is starting...")
+        self.controller.command_line.hide()
+        self.controller.command_line.show()
+
+        try:
+            bin = asm.assembly()
+            bin_filename = "out.bin"
+            with open(bin_filename, 'w') as bin_file:
+                bin_file.write(bin)
+
+            self.controller.command_line.append("Compiling is done successfully.")
+            self.controller.command_line.hide()
+            self.controller.command_line.show()
+
+            self.controller.command_line.append("Machine Language codes are saved into {}.".format(bin_filename))
+            self.controller.command_line.hide()
+            self.controller.command_line.show()
+
+        except Exception as err:
+
+            self.controller.command_line.append(str(err)+"\n")
+
+
+class ButtonController:
+
+    def __init__(self,app):
+
+        self.code_box = app.code_box
+        self.command_line = app.command_line
+        self.file_name = None
+
+        self.emulator_buttons = EmulatorButtons(self)
+        self.control_buttons = ControlButtons(self)
+
+
+class EmulateButton(QPushButton):
+
+    def __init__(self, controller):
+        super().__init__("EMULATE")
+
+        self.controller = controller
+        self.emulator   = Emulator(controller)
+
 
         palette = QPalette()
         palette.setColor(QPalette.Button, QColor(0, 84, 0))
         palette.setColor(QPalette.ButtonText, Qt.white)
         palette.setColor(QPalette.Disabled, QPalette.Button, QColor(30, 30, 30))
         palette.setColor(QPalette.Disabled, QPalette.ButtonText, QColor(90, 90, 90))
-        self.debugger_button.setPalette(palette)
-        self.debugger_button.setStyleSheet("font-weight:bold;")
-        self.debugger_button.setDisabled(True)
-
-        leftLayout = QVBoxLayout()
-        control_button = QHBoxLayout()
-        control_button.addWidget(self.open_button)
-        control_button.addWidget(self.save_button)
-        control_button.addWidget(self.compile_button)
-        control_button.addWidget(self.debugger_button)
-
-        self.debug_buttons = DebugButtons()
+        self.setPalette(palette)
+        self.setStyleSheet("font-weight:bold;")
+        self.setDisabled(True)
+        self.clicked.connect(self.on_click)
 
 
-        self.numbers = NumberBar(self.code_box)
+    def on_click(self):
 
-        self.code_box.setMinimumHeight(300)
+        if self.emulator.isInitialized:
+            self.emulator.reset()
 
-        layoutH = QHBoxLayout()
-        layoutH.setSpacing(1)
-        layoutH.addWidget(self.numbers)
-        layoutH.addWidget(self.code_box)
+        if self.emulator.initialize() == None:
+            return None
+
+        self.controller.code_box.setReadOnly(True)
+        self.controller.emulator_buttons.show()
+        self.controller.emulator_buttons.quit_debug_mode_button.setDisabled(False)
+
+
+class ControlButtons(QVBoxLayout):
+
+    def __init__(self,controller):
+        super().__init__()
+
+        self.open_button = OpenFileButton(controller)
+        self.save_button = SaveButton(controller)
+        self.compile_button = CompileButton(controller)
+        self.emulator_button = EmulateButton(controller)
+
+        buttons = QHBoxLayout()
+        buttons.addWidget(self.open_button)
+        buttons.addWidget(self.save_button)
+        buttons.addWidget(self.compile_button)
+        buttons.addWidget(self.emulator_button)
 
         horizontal_line = QHLine()
         horizontal_line.setStyleSheet("background-color: #126e82;")
 
-
-        leftLayout.addLayout(control_button)
-        leftLayout.addWidget(horizontal_line)
-        leftLayout.addLayout(self.debug_buttons)
-        leftLayout.addLayout(layoutH)
+        self.addLayout(buttons)
+        self.addWidget(horizontal_line)
 
 
+class EmulatorButtons(QVBoxLayout):
+
+    def __init__(self,controller):
+        super().__init__()
+        buttons = QHBoxLayout()
+
+        self.controller = controller
+
+        self.back_button = PicButton("./assets/left_arrow")
+        self.stop_run_button = PicButton("./assets/run")
+        self.forward_button = PicButton("./assets/right_arrow")
+        self.reset_button = PicButton("./assets/reset")
+
+        self.quit_debug_mode_button = PicButton("./assets/close")
+
+        self.time_slider = StepSlider()
+
+        buttons.addWidget(self.back_button)
+        buttons.addWidget(self.stop_run_button)
+        buttons.addWidget(self.forward_button)
+        buttons.addWidget(self.reset_button)
+        buttons.addWidget(self.quit_debug_mode_button)
+        buttons.addWidget(self.time_slider.slider_text)
+        buttons.addWidget(self.time_slider)
+        buttons.addWidget(self.time_slider.slider_value)
+
+        self.debug_line = QHLine()
+        self.debug_line.setStyleSheet("background-color: #126e82;")
+        self.debug_line.hide()
+
+        self.addLayout(buttons)
+        self.addWidget(self.debug_line)
+        self.hide()
+
+    def show(self):
+
+        self.back_button.show()
+        self.stop_run_button.show()
+        self.forward_button.show()
+        self.reset_button.show()
+        self.quit_debug_mode_button.show()
+        self.debug_line.show()
+        self.time_slider.show()
+
+    def hide(self):
+
+        self.back_button.hide()
+        self.stop_run_button.hide()
+        self.forward_button.hide()
+        self.reset_button.hide()
+        self.quit_debug_mode_button.hide()
+        self.debug_line.hide()
+        self.time_slider.hide()
+
+
+class EmulatorWindow(QVBoxLayout):
+
+    def __init__(self):
+        super().__init__()
         self.pc_text = QLabel()
         self.pc_text.setText("PC   : ")
         self.pc_text.setStyleSheet("font-weight: bold;")
@@ -636,330 +794,130 @@ class MainWindow(QWidget):
         PC.addWidget(self.pc_text)
         PC.addWidget(self.pc_value)
 
-
-        registers = QVBoxLayout()
-        registers.addLayout(PC)
-
+        self.addLayout(PC)
 
         self.register_list = []
         for i in range(8):
-            register_label0 = QLabel()
-            register_label0.setText("R{:<{}}:".format(i*2,4 if i<5 else 3))
-            register_label0.setStyleSheet("font-weight: bold;")
-            register_label0.setFixedWidth(40)
-            register_label0.setAlignment(Qt.AlignCenter)
-            register_value0 = QLineEdit()
-            register_value0.setText("0x0000")
-            register_value0.setAlignment(Qt.AlignCenter)
-            register_value0.setReadOnly(True)
-            register_value0.setFixedWidth(80)
-            self.register_list.append(register_value0)
+            horizontal_layout = QHBoxLayout()
+            self.register_list.append(self.register_template(i, horizontal_layout))
 
-            register_label1 = QLabel()
-            register_label1.setText("  R{:<{}}: ".format(i * 2 + 1,4 if i<5 else 3))
-            register_label1.setStyleSheet("font-weight: bold;")
-            register_label1.setFixedWidth(40)
-            register_label1.setAlignment(Qt.AlignCenter)
-            register_value1 = QLineEdit()
-            register_value1.setText("0x0000")
-            register_value1.setAlignment(QtCore.Qt.AlignCenter)
-            register_value1.setFixedWidth(80)
-            register_value1.setReadOnly(True)
-            self.register_list.append(register_value1)
+            self.register_list.append(self.register_template(i, horizontal_layout, True))
+
+            self.addLayout(horizontal_layout)
+
+    def register_template(self, i, layout,second_column = False):
+        register_label = QLabel()
+        if not second_column:
+            register_label.setText("R{:<{}}:".format(i * 2, 4 if i < 5 else 3))
+        else:
+            register_label.setText("  R{:<{}}: ".format(i * 2 + 1, 4 if i < 5 else 3))
+
+        register_label.setStyleSheet("font-weight: bold;")
+        register_label.setFixedWidth(40)
+        register_label.setAlignment(Qt.AlignCenter)
+        register_value = QLineEdit()
+        register_value.setText("0x0000")
+        register_value.setAlignment(Qt.AlignCenter)
+        register_value.setReadOnly(True)
+        register_value.setFixedWidth(80)
+
+        layout.addWidget(register_label)
+        layout.addWidget(register_value)
+
+        return register_value
+    # Move it to EmulatorWindow
+    def update_registers(self, program_counter, register_values):
+
+        self.pc_value.setText("{:#06x}".format(program_counter))
+
+        for reg,reg_value in zip(self.register_list,register_values):
+            new_value = "{:#06x}".format(reg_value)
+            if new_value != reg.text():
+                reg.setText(new_value)
+                reg.setStyleSheet("color:#00de3b")
+            else:
+                reg.setStyleSheet("color:white")
+
+    def clear_registers(self):
+        self.pc_value.setText("0x0000")
+
+        for reg in self.register_list:
+            reg.setText("0x0000")
+            reg.setStyleSheet("color:white")
 
 
-            L1 = QHBoxLayout()
-            L1.addWidget(register_label0)
-            L1.addWidget(register_value0)
-            L1.addWidget(register_label1)
-            L1.addWidget(register_value1)
-            registers.addLayout(L1)
+class Emulator:
 
-        vertical_line = QVLine()
-        vertical_line.setStyleSheet("background-color: #126e82;")
-        upside = QHBoxLayout()
-        upside.addLayout(leftLayout)
-        upside.addWidget(vertical_line)
-        upside.addLayout(registers)
+    def __init__(self,controller):
 
-        self.command_line = QTextEdit()
-        self.command_line.setStyleSheet("font-weight: bold;")
-        self.command_line.setReadOnly(True)
-        self.command_line.setText("")
-        self.command_line.setMinimumHeight(100)
-        self.command_line.setMaximumHeight(150)
+        self.controller = controller
 
-        outer = QVBoxLayout()
-        horizontal_line = QHLine()
-        horizontal_line.setStyleSheet("background-color: #126e82;")
-        outer.addLayout(upside)
-        outer.addWidget(horizontal_line)
-        outer.addWidget(self.command_line)
-        self.setLayout(outer)
+        self.emulator_buttons = controller.emulator_buttons
 
-        self.code_box.textChanged.connect(self.text_changed)
-        self.open_button.clicked.connect(self.open_button_clicked)
-        self.save_button.clicked.connect(self.save_button_clicked)
-        self.compile_button.clicked.connect(self.compile_button_clicked)
-        self.debugger_button.clicked.connect(self.debugger_button_clicked)
+        self.emulator_window = EmulatorWindow()
 
-        self.debug_buttons.back_button.clicked.connect(self.back_button_clicked)
-        self.debug_buttons.stop_run_button.clicked.connect(self.stop_run_button_clicked)
-        self.debug_buttons.forward_button.clicked.connect(self.forward_button_clicked)
-        self.debug_buttons.reset_button.clicked.connect(self.reset_button_clicked)
-        self.debug_buttons.quit_debug_mode_button.clicked.connect(self.quit_emulator)
-        # Brackets ExtraSelection ...
-        self.left_selected_bracket = QTextEdit.ExtraSelection()
-        self.right_selected_bracket = QTextEdit.ExtraSelection()
+        self.program_counter = 0
+        self.register_values = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+
+        self.run_period = 0  # 100ms
 
         self.instructions = []
         self.instruction_index = 0
         self.operation_stack = OperationStack()
 
         self.running = False
+        self.isInitialized = False
 
-        self.timer = QtCore.QTimer(self)
+        #self.timer = QtCore.QTimer()
+        self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.run_code)
 
-    def open_button_clicked(self):
-        options = QFileDialog.Options()
-        options |= QFileDialog.DontUseNativeDialog
-        file_name, _ = QFileDialog.getOpenFileName(self, "File Explorer", "",
-                                                  "Assembly File (*.asm)", options=options)
+        self.emulator_buttons.back_button.clicked.connect(self.step_back)
+        self.emulator_buttons.stop_run_button.clicked.connect(self.stop_run_button_clicked)
+        self.emulator_buttons.forward_button.clicked.connect(self.step_into)
+        self.emulator_buttons.reset_button.clicked.connect(self.reset)
+        self.emulator_buttons.quit_debug_mode_button.clicked.connect(self.close)
 
-        if file_name:
-            self.file_name = file_name
-            self.file = open(self.file_name,"r+")
-            self.code = self.file.read()
-            self.code_box.setPlainText(self.code)
-            self.save_button.setDisabled(True)
-            self.compile_button.setDisabled(False)
-            self.debugger_button.setDisabled(False)
-            hash_object = hashlib.md5(self.code.encode())
-            self.code_hash = str(hash_object.hexdigest())
-            self.file.close()
+    def initialize(self):
+        if self.controller.control_buttons.save_button.on_click() == None:
+            return None
+        asm = Assembler(self.controller.file_name)
+        self.controller.command_line.append("Compiling is starting...")
+        self.controller.command_line.hide()
+        self.controller.command_line.show()
 
-    def save_button_clicked(self):
-        if self.file_name == None:
-            options = QFileDialog.Options()
+        try:
+            bin = asm.assembly()
 
+            self.controller.command_line.append("Compiling is done successfully.")
+            self.controller.command_line.hide()
+            self.controller.command_line.show()
 
-            options |= QFileDialog.DontUseNativeDialog
-            file_name = QFileDialog.getSaveFileName(self, "Save File", "",
-                                                       "Assembly File (*.asm)", options=options)
-
-            if file_name[0]:
-                file_name = file_name[0].split('.')
-
-                if len(file_name) == 1:
-                    self.file_name = file_name[0]+'.asm'
-                elif len(file_name) == 2 and file_name[1].lower() == 'asm':
-                    self.file_name = file_name[0] + '.asm'
-                else:
-                    self.command_line.append("Please use Assembly Extension(*.asm)")
-                    return None
-
-            else:
-                self.command_line.append("Please enter a file name to save!")
+            if asm.instructions == None:
                 return None
 
+            self.instructions = asm.instructions
+            self.instruction_index = 0
+            self.operation_stack.clear()
 
-        self.file = open(self.file_name, "w")
-        current_code = self.code_box.toPlainText()
-        self.file.seek(0)
-        self.file.write(current_code)
-        self.file.truncate()
-        self.file.close()
-        self.file = open(self.file_name,"r+")
+            self.controller.code_box.setPlainText(self.controller.code_box.toPlainText().rstrip() + "\n")
+            self.controller.code_box.set_cursor_to_line(self.instructions[0].line - 1)
 
-        hash_object = hashlib.md5(current_code.encode())
-        self.code_hash = str(hash_object.hexdigest())
-        self.save_button.hide()
-        self.save_button.setDisabled(True)
-        self.save_button.show()
-        self.file.close()
-        return 0
+            self.emulator_buttons.back_button.setDisabled(True)
+            self.emulator_buttons.stop_run_button.setDisabled(False)
+            self.emulator_buttons.forward_button.setDisabled(False)
+            self.emulator_buttons.reset_button.setDisabled(True)
 
-    def compile_button_clicked(self):
-        if self.save_button_clicked() == None:
-            return None
-        asm = Assembler(self.file_name)
-        self.command_line.append("Compiling is starting...")
-        self.command_line.hide()
-        self.command_line.show()
-        try:
-            bin = asm.assembly()
-            bin_filename = "out.bin"
-            with open(bin_filename, 'w') as bin_file:
-                bin_file.write(bin)
+            self.isInitialized = True
 
-            self.command_line.append("Compiling is done successfully.")
-            self.command_line.hide()
-            self.command_line.show()
-
-            self.command_line.append("Machine Language codes are saved into {}.".format(bin_filename))
-            self.command_line.hide()
-            self.command_line.show()
-
-        except Exception as err:
-
-            self.command_line.append(str(err)+"\n")
-
-    def start_debug(self):
-        if self.save_button_clicked() == None:
-            return None
-        asm = Assembler(self.file_name)
-        self.command_line.append("Compiling is starting...")
-        self.command_line.hide()
-        self.command_line.show()
-        try:
-            bin = asm.assembly()
-
-            self.command_line.append("Compiling is done successfully.")
-            self.command_line.hide()
-            self.command_line.show()
             return asm.instructions
 
         except Exception as err:
 
-            self.command_line.append(str(err)+"\n")
-
-    def set_cursor_to_line(self, line, run = False):
-
-        cursor = self.code_box.textCursor()
-
-        instruction_block = self.code_box.document().findBlockByNumber(line)
-
-        cursor.setPosition(instruction_block.position())
-        self.code_box.setTextCursor(cursor)
-
-        block_min_offset = 0
-        if block_min_offset == line:
-            self.debug_buttons.back_button.setDisabled(True)
-            self.debug_buttons.back_button.hide()
-            self.debug_buttons.back_button.show()
-
-        else:
-            if not run:
-                self.debug_buttons.back_button.setDisabled(False)
-
-        block_max_offset = self.code_box.document().lineCount() - 1
-        if block_max_offset == line:
-            self.debug_buttons.forward_button.setDisabled(True)
-            self.debug_buttons.forward_button.hide()
-            self.debug_buttons.forward_button.show()
-
-        else:
-            if not run:
-                self.debug_buttons.forward_button.setDisabled(False)
-                self.debug_buttons.stop_run_button.setDisabled(False)
-
-    def debugger_button_clicked(self):
-
-        self.instructions = self.start_debug()
-        if self.instructions == None:
+            self.controller.command_line.append(str(err)+"\n")
             return None
-        self.instruction_index = 0
-        self.operation_stack.clear()
 
-        for ins in self.instructions:
-            print(ins.line, end=' | ')
-
-
-        self.code_box.setReadOnly(True)
-        self.debug_buttons.show()
-        self.debug_buttons.quit_debug_mode_button.setDisabled(False)
-
-        if self.instructions:
-
-            self.code_box.setPlainText(self.code_box.toPlainText().rstrip() +"\n")
-            self.set_cursor_to_line(self.instructions[0].line-1)
-
-
-            self.debug_buttons.back_button.setDisabled(True)
-            self.debug_buttons.stop_run_button.setDisabled(False)
-            self.debug_buttons.forward_button.setDisabled(False)
-            self.debug_buttons.reset_button.setDisabled(True)
-
-    def back_button_clicked(self):
-
-        OCB = self.operation_stack.pop()
-        operation = OCB.operation
-        print("OCB",OCB.registers)
-
-        self.set_cursor_to_line(operation.line - 1)
-        self.program_counter = OCB.PC
-        self.register_values = OCB.registers
-        self.instruction_index = OCB.operation_index
-
-        if self.instruction_index == 0:
-            self.debug_buttons.back_button.setDisabled(True)
-
-        self.update_registers()
-
-        if self.operation_stack.isEmpty():
-            self.debug_buttons.reset_button.setDisabled(True)
-
-    def run_code(self):
-        if not self.forward_button_clicked(True):
-            self.stop_run_button_clicked()
-            self.debug_buttons.forward_button.setDisabled(True)
-            self.debug_buttons.stop_run_button.setDisabled(True)
-            self.debug_buttons.back_button.setDisabled(False)
-            self.update()
-
-    def stop_run_button_clicked(self):
-        if not self.running:
-            self.running = True
-            self.debug_buttons.stop_run_button.change_image("./assets/pause")
-            self.debug_buttons.back_button.setDisabled(True)
-            self.debug_buttons.forward_button.setDisabled(True)
-            self.timer.start(self.debug_buttons.time_slider.value())
-
-        else:
-            self.running = False
-            self.timer.stop()
-            self.debug_buttons.stop_run_button.change_image("./assets/run")
-
-            self.forward_button_clicked()
-
-    def forward_button_clicked(self,run = False):
-        cursor = self.code_box.textCursor()
-        current_block = cursor.block().blockNumber()
-
-        if self.instruction_index < len(self.instructions)-1:
-
-            OCB = OperationControlBlock(self.instructions[self.instruction_index],
-                                        self.program_counter,self.register_values.copy(),
-                                        self.instruction_index)
-
-            self.operation_stack.push(OCB)
-            self.execute()
-            #print(self.operation_stack.print())
-
-            self.set_cursor_to_line(self.instructions[self.instruction_index].line-1, run)
-
-        elif self.instruction_index == len(self.instructions)-1:
-            self.set_cursor_to_line(current_block + 1, run)
-            OCB = OperationControlBlock(self.instructions[self.instruction_index],
-                                        self.program_counter, self.register_values.copy(),
-                                        self.instruction_index)
-
-            self.operation_stack.push(OCB)
-            self.execute()
-            self.debug_buttons.forward_button.setDisabled(True)
-            self.debug_buttons.stop_run_button.setDisabled(True)
-
-            return False
-
-        else:
-            return False
-
-        if not self.operation_stack.isEmpty():
-            self.debug_buttons.reset_button.setDisabled(False)
-
-        return True
-
+    # Move it to Emulator
     def execute(self):
         instruction = self.instructions[self.instruction_index]
         op_code = instruction.opcode
@@ -1098,73 +1056,198 @@ class MainWindow(QWidget):
 
         self.program_counter += 1
         self.instruction_index += 1
-        self.update_registers()
+        self.emulator_window.update_registers(self.program_counter, self.register_values)
 
         print(self.register_values,self.program_counter)
 
-    def update_registers(self):
+    # Move it to emulator
+    def run_code(self):
+        if not self.step_into(True):
+            self.stop_run_button_clicked()
+            self.emulator_buttons.forward_button.setDisabled(True)
+            self.emulator_buttons.stop_run_button.setDisabled(True)
+            self.emulator_buttons.back_button.setDisabled(False)
+            #self.update()
 
-        self.pc_value.setText("{:#06x}".format(self.program_counter))
+    def step_into(self,run = False):
+        cursor = self.controller.code_box.textCursor()
+        current_block = cursor.block().blockNumber()
 
-        for reg,reg_value in zip(self.register_list,self.register_values):
-            new_value = "{:#06x}".format(reg_value)
-            if new_value != reg.text():
-                reg.setText(new_value)
-                reg.setStyleSheet("color:#00de3b")
-            else:
-                reg.setStyleSheet("color:white")
+        if self.instruction_index < len(self.instructions)-1:
 
-    def reset_button_clicked(self):
+            OCB = OperationControlBlock(self.instructions[self.instruction_index],
+                                        self.program_counter,self.register_values.copy(),
+                                        self.instruction_index)
+
+            self.operation_stack.push(OCB)
+            self.execute()
+            #print(self.operation_stack.print())
+
+            self.controller.code_box.set_cursor_to_line(self.instructions[self.instruction_index].line-1, run)
+
+        elif self.instruction_index == len(self.instructions)-1:
+            self.controller.code_box.set_cursor_to_line(current_block + 1, run)
+            OCB = OperationControlBlock(self.instructions[self.instruction_index],
+                                        self.program_counter, self.register_values.copy(),
+                                        self.instruction_index)
+
+            self.operation_stack.push(OCB)
+            self.execute()
+            self.emulator_buttons.forward_button.setDisabled(True)
+            self.emulator_buttons.stop_run_button.setDisabled(True)
+
+            return False
+
+        else:
+            return False
+
+        if not self.operation_stack.isEmpty():
+            self.emulator_buttons.reset_button.setDisabled(False)
+
+        return True
+
+    def step_back(self):
+
+        OCB = self.operation_stack.pop()
+        operation = OCB.operation
+        print("OCB",OCB.registers)
+
+        self.controller.code_box.set_cursor_to_line(operation.line - 1)
+        self.program_counter = OCB.PC
+        self.register_values = OCB.registers
+        self.instruction_index = OCB.operation_index
+
+        if self.instruction_index == 0:
+            self.emulator_buttons.back_button.setDisabled(True)
+
+        self.emulator_window.update_registers(self.program_counter, self.register_values)
+
+        if self.operation_stack.isEmpty():
+            self.emulator_buttons.reset_button.setDisabled(True)
+
+    def stop_run_button_clicked(self):
+        if not self.running:
+            self.running = True
+            self.emulator_buttons.stop_run_button.change_image("./assets/pause")
+            self.emulator_buttons.back_button.setDisabled(True)
+            self.emulator_buttons.forward_button.setDisabled(True)
+            self.timer.start(self.emulator_buttons.time_slider.value())
+
+        else:
+            self.running = False
+            self.timer.stop()
+            self.emulator_buttons.stop_run_button.change_image("./assets/run")
+
+            self.step_into()
+
+    def reset(self):
+
+        if self.running:
+            self.stop_run_button_clicked()
+            self.emulator_buttons.stop_run_button.update()
 
         self.operation_stack.clear()
         self.register_values = [0]*16
         self.program_counter = 0
-        self.pc_value.setText("0x0000")
+        self.emulator_window.pc_value.setText("0x0000")
         self.instruction_index = 0
+        self.emulator_window.clear_registers()
 
-        if self.running:
-            self.stop_run_button_clicked()
-            self.stop_run_button.update()
+        self.controller.code_box.set_cursor_to_line(self.instructions[0].line - 1)
 
-        self.set_cursor_to_line(self.instructions[0].line - 1)
+        self.emulator_buttons.stop_run_button.setDisabled(False)
+        self.emulator_buttons.back_button.setDisabled(True)
 
-        for reg_value in self.register_list:
-            reg_value.setText("0x0000")
-            reg_value.setStyleSheet("color:white")
+    def close(self):
 
-        self.debug_buttons.stop_run_button.setDisabled(False)
-        self.debug_buttons.back_button.setDisabled(True)
+        self.reset()
+        self.controller.code_box.setReadOnly(False)
+        self.emulator_buttons.hide()
 
-    def text_changed(self):
 
-        hash_object = hashlib.md5(self.code_box.toPlainText().encode())
-        current_hash = str(hash_object.hexdigest())
-        self.save_button.setDisabled(current_hash == self.code_hash)
+class MainWindow(QWidget):
 
-        self.debugger_button.setDisabled(len(self.code_box.toPlainText()) == 0)
-        self.compile_button.setDisabled(len(self.code_box.toPlainText()) == 0)
+    def __init__(self, parent=None):
+        super().__init__(parent)
 
-        self.code_box.colorize()
+        self.setWindowTitle("QTextEdit")
+        self.resize(720, 480)
+        self.setMinimumWidth(720)
+
+        self.command_line = QTextEdit()
+        self.code_box = CodeWindow()
+        self.numbers = NumberBar(self.code_box)
+
+
+        self.button_controller = ButtonController(self)
+        self.code_box.controller = self.button_controller
+
+        leftLayout = QVBoxLayout()
+
+        code_editor_layout = QHBoxLayout()
+        code_editor_layout.setSpacing(1)
+        code_editor_layout.addWidget(self.numbers)
+        code_editor_layout.addWidget(self.code_box)
+
+
+        leftLayout.addLayout(self.button_controller.control_buttons)
+        leftLayout.addLayout(self.button_controller.emulator_buttons)
+        leftLayout.addLayout(code_editor_layout)
+
+
+
+
+
+        vertical_line = QVLine()
+        vertical_line.setStyleSheet("background-color: #126e82;")
+        upside = QHBoxLayout()
+        upside.addLayout(leftLayout)
+        upside.addWidget(vertical_line)
+        upside.addLayout(self.button_controller.control_buttons.emulator_button.emulator.emulator_window)
+
+
+        self.command_line.setStyleSheet("font-weight: bold;")
+        self.command_line.setReadOnly(True)
+        self.command_line.setText("")
+        self.command_line.setMinimumHeight(100)
+        self.command_line.setMaximumHeight(150)
+
+        outer = QVBoxLayout()
+        horizontal_line = QHLine()
+        horizontal_line.setStyleSheet("background-color: #126e82;")
+        outer.addLayout(upside)
+        outer.addWidget(horizontal_line)
+        outer.addWidget(self.command_line)
+        self.setLayout(outer)
+
+
+        #self.button_controller.control_button.open_button.clicked.connect(self.open_button_clicked)
+        #self.button_controller.control_button.save_button.clicked.connect(self.save_button_clicked)
+        #self.button_controller.control_button.compile_button.clicked.connect(self.compile_button_clicked)
+        #self.button_controller.control_button.debugger_button.clicked.connect(self.debugger_button_clicked)
+
+        #self.button_controller.debug_buttons.back_button.clicked.connect(self.back_button_clicked)
+        #self.button_controller.debug_buttons.stop_run_button.clicked.connect(self.stop_run_button_clicked)
+        #self.button_controller.debug_buttons.forward_button.clicked.connect(self.forward_button_clicked)
+        #self.button_controller.debug_buttons.reset_button.clicked.connect(self.reset_button_clicked)
+        #self.button_controller.debug_buttons.quit_debug_mode_button.clicked.connect(self.quit_emulator)
+
+
+
 
     def paintEvent(self, event):
+
+        left_selected_bracket = QTextEdit.ExtraSelection()
+        right_selected_bracket = QTextEdit.ExtraSelection()
+
         highlighted_line = QTextEdit.ExtraSelection()
         highlighted_line.format.setBackground(lineHighlightColor)
-        highlighted_line.format.setProperty(QTextFormat
-                                            .FullWidthSelection,
-                                            QVariant(True))
+        highlighted_line.format.setProperty(QTextFormat.FullWidthSelection,QVariant(True))
         highlighted_line.cursor = self.code_box.textCursor()
         highlighted_line.cursor.clearSelection()
-        self.code_box.setExtraSelections([highlighted_line,
-                                        self.left_selected_bracket,
-                                        self.right_selected_bracket])
+        self.code_box.setExtraSelections([highlighted_line,left_selected_bracket,right_selected_bracket])
 
-    def quit_emulator(self):
-        self.code_box.setReadOnly(False)
-        self.debug_buttons.hide()
 
-        if self.running:
-            self.stop_run_button_clicked()
-            self.stop_run_button.update()
 
 
 
@@ -1195,3 +1278,4 @@ if __name__ == '__main__':
     win = MainWindow()
     win.show()
     sys.exit(app.exec_())
+
