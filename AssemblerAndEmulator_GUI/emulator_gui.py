@@ -11,11 +11,182 @@ from PyQt5.QtCore import *
 import time
 
 
-# ToDo: Add Operation Stack to restore operationss
-# Execute and connect it with registers
+# ToDo: Execute Jump Instruction and Memory instructions
+# When there is an eerror, highlight error line!
 
 lineBarColor = QColor("#39444a")
 lineHighlightColor  = QColor("#39444a")
+
+
+class DebugButtons(QVBoxLayout):
+
+    def __init__(self):
+        super().__init__()
+        buttons = QHBoxLayout()
+
+        self.back_button = PicButton("./assets/left_arrow")
+        self.stop_run_button = PicButton("./assets/run")
+        self.forward_button = PicButton("./assets/right_arrow")
+        self.reset_button = PicButton("./assets/reset")
+
+        self.quit_debug_mode_button = PicButton("./assets/close")
+
+        self.time_slider = StepSlider()
+
+        buttons.addWidget(self.back_button)
+        buttons.addWidget(self.stop_run_button)
+        buttons.addWidget(self.forward_button)
+        buttons.addWidget(self.reset_button)
+        buttons.addWidget(self.quit_debug_mode_button)
+        buttons.addWidget(self.time_slider.slider_text)
+        buttons.addWidget(self.time_slider)
+        buttons.addWidget(self.time_slider.slider_value)
+
+        self.debug_line = QHLine()
+        self.debug_line.setStyleSheet("background-color: #126e82;")
+        self.debug_line.hide()
+
+        self.addLayout(buttons)
+        self.addWidget(self.debug_line)
+        self.hide()
+
+    def show(self):
+
+        self.back_button.show()
+        self.stop_run_button.show()
+        self.forward_button.show()
+        self.reset_button.show()
+        self.quit_debug_mode_button.show()
+        self.debug_line.show()
+        self.time_slider.show()
+
+    def hide(self):
+
+        self.back_button.hide()
+        self.stop_run_button.hide()
+        self.forward_button.hide()
+        self.reset_button.hide()
+        self.quit_debug_mode_button.hide()
+        self.debug_line.hide()
+        self.time_slider.hide()
+
+
+class PicButton(QAbstractButton):
+    def __init__(self, pixmap, size = (20,40),parent=None):
+        super(PicButton, self).__init__(parent)
+        self.pixmap = QPixmap(pixmap+".png")
+        self.pixmap_active = QPixmap(pixmap+"_active.png")
+        self.pixmap_hover = QPixmap(pixmap+"_hover.png")
+        self.size = size
+
+        self.pressed.connect(self.update)
+        self.released.connect(self.update)
+        self.setDisabled(True)
+
+        self.setFixedWidth(size[1])
+        self.setFixedHeight(size[0])
+
+    def paintEvent(self, event):
+        pix = self.pixmap
+
+        if self.isEnabled():
+            if self.underMouse():
+                pix = self.pixmap_hover
+            else:
+                pix = self.pixmap_active
+
+        painter = QPainter(self)
+        painter.drawPixmap(event.rect(), pix)
+
+    def change_image(self,location):
+        self.pixmap = QPixmap(location + ".png")
+        self.pixmap_active = QPixmap(location + "_active.png")
+        self.pixmap_hover = QPixmap(location + "_hover.png")
+
+    def enterEvent(self, event):
+        self.update()
+
+    def leaveEvent(self, event):
+        self.update()
+
+    def sizeHint(self):
+        return QSize(self.size[0],self.size[1])
+
+
+class StepSlider(QSlider):
+
+    def __init__(self):
+        super().__init__()
+        self.setOrientation(Qt.Horizontal)
+        self.setMaximumWidth(300)
+        self.setMaximum(1000)
+        self.setMinimum(0)
+
+        self.valueChanged.connect(self.update_step_time)
+
+        self.setStyleSheet(
+            "QSlider::groove:horizontal {\
+            background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop: 0 #126e82, stop: 1 #8cebff);\
+            height: 4px;\
+            border-radius: 2px;\
+            }QSlider::handle:horizontal {\
+            background-color: #bababa;\
+            height: 8px;\
+            width: 8px;\
+            margin: -8px 2; \
+            }")
+
+        self.slider_text = QLabel()
+        self.slider_text.setText("Step Delay:")
+        self.slider_text.setStyleSheet("color:#999999")
+        self.slider_text.setFixedWidth(70)
+        self.slider_text.setAlignment(Qt.AlignCenter)
+
+        self.slider_value = QLabel()
+        self.slider_value.setText("0 ms")
+        self.slider_value.setFixedWidth(60)
+        self.slider_value.setAlignment(Qt.AlignVCenter)
+
+        self.hide()
+
+    def mousePressEvent(self, QMouseEvent):
+        super(StepSlider,self).mousePressEvent(QMouseEvent)
+        if QMouseEvent.button() == QtCore.Qt.LeftButton:
+            val = self.pixel_pos_to_range(QMouseEvent.pos())
+            self.setValue(val)
+
+    def pixel_pos_to_range(self, pos):
+        opt = QStyleOptionSlider()
+        self.initStyleOption(opt)
+        gr = self.style().subControlRect(QStyle.CC_Slider, opt, QStyle.SC_SliderGroove, self)
+        sr = self.style().subControlRect(QStyle.CC_Slider, opt, QStyle.SC_SliderHandle, self)
+
+        if self.orientation() == QtCore.Qt.Horizontal:
+            sliderLength = sr.width()
+            sliderMin = gr.x()
+            sliderMax = gr.right() - sliderLength + 1
+        else:
+            sliderLength = sr.height()
+            sliderMin = gr.y()
+            sliderMax = gr.bottom() - sliderLength + 1;
+        pr = pos - sr.center() + sr.topLeft()
+        p = pr.x() if self.orientation() == QtCore.Qt.Horizontal else pr.y()
+        return QStyle.sliderValueFromPosition(self.minimum(), self.maximum(), p - sliderMin,
+                                               sliderMax - sliderMin, opt.upsideDown)
+
+    def update_step_time(self,value):
+        self.slider_value.setText(str(value)+" ms")
+
+    def hide(self):
+        super().hide()
+        self.slider_text.hide()
+        self.slider_value.hide()
+
+    def show(self):
+        super().show()
+        self.slider_text.show()
+        self.slider_value.show()
+
 
 class OperationControlBlock:
 
@@ -56,6 +227,7 @@ class OperationStack:
     def isEmpty(self):
         return len(self.__stack) == 0
 
+
 class QVLine(QFrame):
     def __init__(self):
         super(QVLine, self).__init__()
@@ -79,7 +251,6 @@ class NumberBar(QWidget):
         self.editor.blockCountChanged.connect(self.update_width)
         self.editor.updateRequest.connect(self.update_on_scroll)
         self.update_width('1')
-
 
     def update_on_scroll(self, rect, scroll):
         if self.isVisible():
@@ -361,6 +532,19 @@ class CodeWindow(QPlainTextEdit):
         self.blockSignals(False)
 
 
+class OpenFileButton(QPushButton):
+
+    def __init__(self):
+        super().__init__("OPEN")
+        self.setStyleSheet("background-color:#09424f;font-weight:bold;")
+
+
+class SaveButton(QPushButton):
+
+    def __init__(self):
+        super().__init__("SAVE")
+
+
 class MainWindow(QWidget):
 
     def __init__(self, parent=None):
@@ -377,11 +561,12 @@ class MainWindow(QWidget):
         self.register_values = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 
         self.setWindowTitle("QTextEdit")
-        self.resize(640, 480)
+        self.resize(720, 480)
+        self.setMinimumWidth(720)
 
         self.code_box = CodeWindow()
-        self.open_button = QPushButton("OPEN")
-        self.open_button.setStyleSheet("background-color:#09424f;font-weight:bold;")
+        self.open_button = OpenFileButton()
+
         self.save_button = QPushButton("SAVE")
 
         self.save_button.setDisabled(True)
@@ -414,54 +599,12 @@ class MainWindow(QWidget):
         control_button.addWidget(self.compile_button)
         control_button.addWidget(self.debugger_button)
 
-        debug_button = QHBoxLayout()
-        self.back_button = QPushButton()
-        self.stop_run_button = QPushButton()
-        self.forward_button = QPushButton()
-        self.reset_button   = QPushButton("Reset")
-        self.quit_debug_mode = QPushButton("Quit")
+        self.debug_buttons = DebugButtons()
 
-        self.dial_buton = QDial()
-        self.dial_buton.hide()
-
-
-        debug_button.addWidget(self.back_button)
-        debug_button.addWidget(self.stop_run_button)
-        debug_button.addWidget(self.forward_button)
-        debug_button.addWidget(self.reset_button)
-        debug_button.addWidget(self.quit_debug_mode)
-        debug_button.addWidget(self.dial_buton)
-
-        self.back_button.hide()
-        self.stop_run_button.hide()
-        self.forward_button.hide()
-        self.reset_button.hide()
-        self.quit_debug_mode.hide()
-
-        #icon = QtGui.QPixmap('./assets/left_arrow.png')
-        icon = QIcon('./assets/left_arrow.png')
-        self.back_button.setIcon(icon)
-        icon = QIcon('./assets/right_arrow.png')
-        self.forward_button.setIcon(icon)
-        icon = QIcon('./assets/run.png')
-        self.stop_run_button.setIcon(icon)
-
-
-        self.back_button.setDisabled(True)
-
-
-        self.stop_run_button.setDisabled(True)
-        self.forward_button.setDisabled(True)
-        self.reset_button.setDisabled(True)
-        self.quit_debug_mode.setDisabled(True)
-        #self.back_button.setMaximumWidth(50)
-        self.back_button.setFixedWidth(50)
-        self.forward_button.setFixedWidth(50)
-        self.stop_run_button.setFixedWidth(75)
 
         self.numbers = NumberBar(self.code_box)
 
-
+        self.code_box.setMinimumHeight(300)
 
         layoutH = QHBoxLayout()
         layoutH.setSpacing(1)
@@ -471,27 +614,28 @@ class MainWindow(QWidget):
         horizontal_line = QHLine()
         horizontal_line.setStyleSheet("background-color: #126e82;")
 
-        self.debug_line = QHLine()
-        self.debug_line.setStyleSheet("background-color: #126e82;")
-        self.debug_line.hide()
+
         leftLayout.addLayout(control_button)
         leftLayout.addWidget(horizontal_line)
-        leftLayout.addLayout(debug_button)
-        leftLayout.addWidget(self.debug_line)
+        leftLayout.addLayout(self.debug_buttons)
         leftLayout.addLayout(layoutH)
 
 
         self.pc_text = QLabel()
         self.pc_text.setText("PC   : ")
         self.pc_text.setStyleSheet("font-weight: bold;")
+        self.pc_text.setFixedWidth(40)
+        self.pc_text.setAlignment(Qt.AlignCenter)
         self.pc_value = QLineEdit()
         self.pc_value.setText("0x0000")
         self.pc_value.setAlignment(QtCore.Qt.AlignCenter)
         self.pc_value.setReadOnly(True)
+        self.pc_value.setFixedWidth(213)
         PC = QHBoxLayout()
 
         PC.addWidget(self.pc_text)
         PC.addWidget(self.pc_value)
+
 
         registers = QVBoxLayout()
         registers.addLayout(PC)
@@ -500,20 +644,26 @@ class MainWindow(QWidget):
         self.register_list = []
         for i in range(8):
             register_label0 = QLabel()
-            register_label0.setText("R{:<{}}: ".format(i*2,4 if i<5 else 3))
+            register_label0.setText("R{:<{}}:".format(i*2,4 if i<5 else 3))
             register_label0.setStyleSheet("font-weight: bold;")
+            register_label0.setFixedWidth(40)
+            register_label0.setAlignment(Qt.AlignCenter)
             register_value0 = QLineEdit()
             register_value0.setText("0x0000")
-            register_value0.setAlignment(QtCore.Qt.AlignCenter)
+            register_value0.setAlignment(Qt.AlignCenter)
             register_value0.setReadOnly(True)
+            register_value0.setFixedWidth(80)
             self.register_list.append(register_value0)
 
             register_label1 = QLabel()
-            register_label1.setText("R{:<{}}: ".format(i * 2 + 1,4 if i<5 else 3))
+            register_label1.setText("  R{:<{}}: ".format(i * 2 + 1,4 if i<5 else 3))
             register_label1.setStyleSheet("font-weight: bold;")
+            register_label1.setFixedWidth(40)
+            register_label1.setAlignment(Qt.AlignCenter)
             register_value1 = QLineEdit()
             register_value1.setText("0x0000")
             register_value1.setAlignment(QtCore.Qt.AlignCenter)
+            register_value1.setFixedWidth(80)
             register_value1.setReadOnly(True)
             self.register_list.append(register_value1)
 
@@ -523,7 +673,6 @@ class MainWindow(QWidget):
             L1.addWidget(register_value0)
             L1.addWidget(register_label1)
             L1.addWidget(register_value1)
-
             registers.addLayout(L1)
 
         vertical_line = QVLine()
@@ -537,6 +686,9 @@ class MainWindow(QWidget):
         self.command_line.setStyleSheet("font-weight: bold;")
         self.command_line.setReadOnly(True)
         self.command_line.setText("")
+        self.command_line.setMinimumHeight(100)
+        self.command_line.setMaximumHeight(150)
+
         outer = QVBoxLayout()
         horizontal_line = QHLine()
         horizontal_line.setStyleSheet("background-color: #126e82;")
@@ -551,10 +703,11 @@ class MainWindow(QWidget):
         self.compile_button.clicked.connect(self.compile_button_clicked)
         self.debugger_button.clicked.connect(self.debugger_button_clicked)
 
-        self.back_button.clicked.connect(self.back_button_clicked)
-        self.stop_run_button.clicked.connect(self.stop_run_button_clicked)
-        self.forward_button.clicked.connect(self.forward_button_clicked)
-        self.reset_button.clicked.connect(self.reset_button_clicked)
+        self.debug_buttons.back_button.clicked.connect(self.back_button_clicked)
+        self.debug_buttons.stop_run_button.clicked.connect(self.stop_run_button_clicked)
+        self.debug_buttons.forward_button.clicked.connect(self.forward_button_clicked)
+        self.debug_buttons.reset_button.clicked.connect(self.reset_button_clicked)
+        self.debug_buttons.quit_debug_mode_button.clicked.connect(self.quit_emulator)
         # Brackets ExtraSelection ...
         self.left_selected_bracket = QTextEdit.ExtraSelection()
         self.right_selected_bracket = QTextEdit.ExtraSelection()
@@ -562,6 +715,8 @@ class MainWindow(QWidget):
         self.instructions = []
         self.instruction_index = 0
         self.operation_stack = OperationStack()
+
+        self.running = False
 
         self.timer = QtCore.QTimer(self)
         self.timer.timeout.connect(self.run_code)
@@ -669,7 +824,7 @@ class MainWindow(QWidget):
 
             self.command_line.append(str(err)+"\n")
 
-    def set_cursor_to_line(self,line):
+    def set_cursor_to_line(self, line, run = False):
 
         cursor = self.code_box.textCursor()
 
@@ -680,26 +835,30 @@ class MainWindow(QWidget):
 
         block_min_offset = 0
         if block_min_offset == line:
-            self.back_button.setDisabled(True)
-            self.back_button.hide()
-            self.back_button.show()
+            self.debug_buttons.back_button.setDisabled(True)
+            self.debug_buttons.back_button.hide()
+            self.debug_buttons.back_button.show()
 
         else:
-            self.back_button.setDisabled(False)
+            if not run:
+                self.debug_buttons.back_button.setDisabled(False)
 
         block_max_offset = self.code_box.document().lineCount() - 1
         if block_max_offset == line:
-            self.forward_button.setDisabled(True)
-            self.forward_button.hide()
-            self.forward_button.show()
+            self.debug_buttons.forward_button.setDisabled(True)
+            self.debug_buttons.forward_button.hide()
+            self.debug_buttons.forward_button.show()
 
         else:
-            self.forward_button.setDisabled(False)
-            self.stop_run_button.setDisabled(False)
+            if not run:
+                self.debug_buttons.forward_button.setDisabled(False)
+                self.debug_buttons.stop_run_button.setDisabled(False)
 
     def debugger_button_clicked(self):
 
         self.instructions = self.start_debug()
+        if self.instructions == None:
+            return None
         self.instruction_index = 0
         self.operation_stack.clear()
 
@@ -707,14 +866,9 @@ class MainWindow(QWidget):
             print(ins.line, end=' | ')
 
 
-
         self.code_box.setReadOnly(True)
-        self.back_button.show()
-        self.stop_run_button.show()
-        self.forward_button.show()
-        self.reset_button.show()
-        self.quit_debug_mode.show()
-        self.dial_buton.show()
+        self.debug_buttons.show()
+        self.debug_buttons.quit_debug_mode_button.setDisabled(False)
 
         if self.instructions:
 
@@ -722,13 +876,10 @@ class MainWindow(QWidget):
             self.set_cursor_to_line(self.instructions[0].line-1)
 
 
-            self.back_button.setDisabled(True)
-            self.stop_run_button.setDisabled(False)
-            self.forward_button.setDisabled(False)
-            self.reset_button.setDisabled(True)
-            #cursor = self.code_box.textCursor()
-            #cursor.setPosition(0)
-            #self.code_box.setTextCursor(cursor)
+            self.debug_buttons.back_button.setDisabled(True)
+            self.debug_buttons.stop_run_button.setDisabled(False)
+            self.debug_buttons.forward_button.setDisabled(False)
+            self.debug_buttons.reset_button.setDisabled(True)
 
     def back_button_clicked(self):
 
@@ -742,27 +893,40 @@ class MainWindow(QWidget):
         self.instruction_index = OCB.operation_index
 
         if self.instruction_index == 0:
-            self.back_button.setDisabled(True)
+            self.debug_buttons.back_button.setDisabled(True)
 
         self.update_registers()
 
         if self.operation_stack.isEmpty():
-            self.reset_button.setDisabled(True)
+            self.debug_buttons.reset_button.setDisabled(True)
 
     def run_code(self):
-        if not self.forward_button_clicked():
-            self.timer.stop()
+        if not self.forward_button_clicked(True):
+            self.stop_run_button_clicked()
+            self.debug_buttons.forward_button.setDisabled(True)
+            self.debug_buttons.stop_run_button.setDisabled(True)
+            self.debug_buttons.back_button.setDisabled(False)
+            self.update()
 
     def stop_run_button_clicked(self):
-        self.timer.start(500)
+        if not self.running:
+            self.running = True
+            self.debug_buttons.stop_run_button.change_image("./assets/pause")
+            self.debug_buttons.back_button.setDisabled(True)
+            self.debug_buttons.forward_button.setDisabled(True)
+            self.timer.start(self.debug_buttons.time_slider.value())
 
+        else:
+            self.running = False
+            self.timer.stop()
+            self.debug_buttons.stop_run_button.change_image("./assets/run")
 
+            self.forward_button_clicked()
 
-    def forward_button_clicked(self):
+    def forward_button_clicked(self,run = False):
         cursor = self.code_box.textCursor()
         current_block = cursor.block().blockNumber()
-        #print(current_block)
-        #print("L ",self.instruction_index,len(self.instructions))
+
         if self.instruction_index < len(self.instructions)-1:
 
             OCB = OperationControlBlock(self.instructions[self.instruction_index],
@@ -772,26 +936,27 @@ class MainWindow(QWidget):
             self.operation_stack.push(OCB)
             self.execute()
             #print(self.operation_stack.print())
-            self.instruction_index += 1
-            self.set_cursor_to_line(self.instructions[self.instruction_index].line-1)
+
+            self.set_cursor_to_line(self.instructions[self.instruction_index].line-1, run)
 
         elif self.instruction_index == len(self.instructions)-1:
-            self.set_cursor_to_line(current_block + 1)
+            self.set_cursor_to_line(current_block + 1, run)
             OCB = OperationControlBlock(self.instructions[self.instruction_index],
                                         self.program_counter, self.register_values.copy(),
                                         self.instruction_index)
 
             self.operation_stack.push(OCB)
             self.execute()
-            self.instruction_index += 1
-            self.forward_button.setDisabled(True)
-            self.stop_run_button.setDisabled(True)
+            self.debug_buttons.forward_button.setDisabled(True)
+            self.debug_buttons.stop_run_button.setDisabled(True)
+
+            return False
 
         else:
             return False
 
         if not self.operation_stack.isEmpty():
-            self.reset_button.setDisabled(False)
+            self.debug_buttons.reset_button.setDisabled(False)
 
         return True
 
@@ -805,6 +970,8 @@ class MainWindow(QWidget):
             Rs2 = int(instruction.operand3[1:])
 
             self.register_values[Rd] = self.register_values[Rs1] + self.register_values[Rs2]
+            if self.register_values[Rd] > int("ffff",16):
+                self.register_values[Rd] -= int("ffff",16) + 1
 
         elif op_code == "SUB":
             Rd = int(instruction.operand1[1:])
@@ -812,6 +979,7 @@ class MainWindow(QWidget):
             Rs2 = int(instruction.operand3[1:])
 
             self.register_values[Rd] = abs(self.register_values[Rs1] - self.register_values[Rs2])
+
 
         elif op_code == "AND":
             Rd = int(instruction.operand1[1:])
@@ -890,7 +1058,32 @@ class MainWindow(QWidget):
         elif op_code == "STORE":
             pass
         elif op_code == "JUMP":
-            pass
+            jump_offset = instruction.machineCode[-8:]
+            print(jump_offset)
+
+            self.program_counter+=1
+
+            if jump_offset[0] == '1':
+                complement = int(str(11111111 - int(jump_offset)),2)+1
+                offset_temp = -complement
+
+            else:
+                offset_temp = int(jump_offset,2)
+
+
+            print("OFFSET",offset_temp)
+            self.program_counter += offset_temp
+            print("NEW PX",self.program_counter)
+            self.instruction_index = self.program_counter
+
+            if self.instruction_index != len(self.instructions)-1:
+                pass
+
+            self.program_counter-=1
+            self.instruction_index -= 1
+            #print()
+            # Jump to instruction where after add PC+1 to jumpoffset
+
         elif op_code == "NOP":
             pass
         elif op_code == "JZ":
@@ -904,7 +1097,7 @@ class MainWindow(QWidget):
             self.register_values[Rd] = Rs1
 
         self.program_counter += 1
-
+        self.instruction_index += 1
         self.update_registers()
 
         print(self.register_values,self.program_counter)
@@ -917,18 +1110,30 @@ class MainWindow(QWidget):
             new_value = "{:#06x}".format(reg_value)
             if new_value != reg.text():
                 reg.setText(new_value)
-                reg.setStyleSheet("color:red")
+                reg.setStyleSheet("color:#00de3b")
             else:
                 reg.setStyleSheet("color:white")
 
     def reset_button_clicked(self):
-        while not self.operation_stack.isEmpty():
-            self.back_button_clicked()
+
+        self.operation_stack.clear()
+        self.register_values = [0]*16
+        self.program_counter = 0
+        self.pc_value.setText("0x0000")
+        self.instruction_index = 0
+
+        if self.running:
+            self.stop_run_button_clicked()
+            self.stop_run_button.update()
+
+        self.set_cursor_to_line(self.instructions[0].line - 1)
 
         for reg_value in self.register_list:
+            reg_value.setText("0x0000")
             reg_value.setStyleSheet("color:white")
 
-        self.stop_run_button.setDisabled(False)
+        self.debug_buttons.stop_run_button.setDisabled(False)
+        self.debug_buttons.back_button.setDisabled(True)
 
     def text_changed(self):
 
@@ -952,6 +1157,16 @@ class MainWindow(QWidget):
         self.code_box.setExtraSelections([highlighted_line,
                                         self.left_selected_bracket,
                                         self.right_selected_bracket])
+
+    def quit_emulator(self):
+        self.code_box.setReadOnly(False)
+        self.debug_buttons.hide()
+
+        if self.running:
+            self.stop_run_button_clicked()
+            self.stop_run_button.update()
+
+
 
 
 if __name__ == '__main__':
