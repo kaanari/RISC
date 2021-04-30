@@ -1,6 +1,3 @@
-from PyQt5.QtWidgets import *
-from PyQt5 import QtCore,QtGui
-
 import sys
 import hashlib
 from assembler import  Assembler
@@ -8,16 +5,14 @@ from assembler import  Assembler
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
-import time
 
 
-# ToDo: Execute Jump Instruction and Memory instructions
-# When there is an eerror, highlight error line!
+# ToDo: Execute and Memory instructions
+# ToDo: Add Memory for Memory Instructions (2^16 Address, 16-bit word length = 16x2^16)
+# ToDo: Add Memory Explorer to show memory cell values
+# ToDo: Add Comments to Assembler
 
-lineBarColor = QColor("#39444a")
-lineHighlightColor  = QColor("#39444a")
-
-
+# When there is an error, highlight error line!
 
 
 class PicButton(QAbstractButton):
@@ -100,7 +95,7 @@ class StepSlider(QSlider):
 
     def mousePressEvent(self, QMouseEvent):
         super(StepSlider,self).mousePressEvent(QMouseEvent)
-        if QMouseEvent.button() == QtCore.Qt.LeftButton:
+        if QMouseEvent.button() == Qt.LeftButton:
             val = self.pixel_pos_to_range(QMouseEvent.pos())
             self.setValue(val)
 
@@ -110,7 +105,7 @@ class StepSlider(QSlider):
         gr = self.style().subControlRect(QStyle.CC_Slider, opt, QStyle.SC_SliderGroove, self)
         sr = self.style().subControlRect(QStyle.CC_Slider, opt, QStyle.SC_SliderHandle, self)
 
-        if self.orientation() == QtCore.Qt.Horizontal:
+        if self.orientation() == Qt.Horizontal:
             sliderLength = sr.width()
             sliderMin = gr.x()
             sliderMax = gr.right() - sliderLength + 1
@@ -119,7 +114,7 @@ class StepSlider(QSlider):
             sliderMin = gr.y()
             sliderMax = gr.bottom() - sliderLength + 1;
         pr = pos - sr.center() + sr.topLeft()
-        p = pr.x() if self.orientation() == QtCore.Qt.Horizontal else pr.y()
+        p = pr.x() if self.orientation() == Qt.Horizontal else pr.y()
         return QStyle.sliderValueFromPosition(self.minimum(), self.maximum(), p - sliderMin,
                                                sliderMax - sliderMin, opt.upsideDown)
 
@@ -182,6 +177,7 @@ class QVLine(QFrame):
         super(QVLine, self).__init__()
         self.setFrameShape(QFrame.VLine)
         self.setFrameShadow(QFrame.Sunken)
+        self.setStyleSheet("background-color: #126e82;")
 
 
 class QHLine(QFrame):
@@ -189,12 +185,17 @@ class QHLine(QFrame):
         super(QHLine, self).__init__()
         self.setFrameShape(QFrame.HLine)
         self.setFrameShadow(QFrame.Sunken)
+        self.setStyleSheet("background-color: #126e82;")
 
 
-class NumberBar(QWidget):
-    def __init__(self, parent = None):
-        super(NumberBar, self).__init__(parent)
-        self.editor = parent
+class LineNumberBar(QWidget):
+    lineBarColor = QColor("#39444a")
+    lineHighlightColor = QColor("#39444a")
+
+    def __init__(self, code_box,parent = None):
+        super().__init__(parent)
+        self.editor = code_box
+
         layout = QVBoxLayout()
         self.setLayout(layout)
         self.editor.blockCountChanged.connect(self.update_width)
@@ -219,7 +220,7 @@ class NumberBar(QWidget):
             height = self.fontMetrics().height()
             number = block.blockNumber()
             painter = QPainter(self)
-            painter.fillRect(event.rect(), lineBarColor)
+            painter.fillRect(event.rect(), LineNumberBar.lineBarColor)
             #painter.drawRect(0, 0, event.rect().width() - 1, event.rect().height() - 1)
             font = painter.font()
             current_block = self.editor.textCursor().block().blockNumber() + 1
@@ -253,6 +254,7 @@ class NumberBar(QWidget):
 
 
 class CodeWindow(QPlainTextEdit):
+
     def __init__(self,parent = None):
         super(CodeWindow, self).__init__(parent)
         self.labels = []
@@ -263,14 +265,14 @@ class CodeWindow(QPlainTextEdit):
         self.textChanged.connect(self.text_changed)
 
     def colorize(self):
-        format = QtGui.QTextCharFormat()
-        # format.setBackground(QtGui.QBrush(QtGui.QColor("red")))
-        format.setForeground(QtGui.QColor(255, 255, 255))
+        format = QTextCharFormat()
+
+        format.setForeground(QColor(255, 255, 255))
         self.blockSignals(True)
         cursor = self.textCursor()
-        cursor.setPosition(0, QtGui.QTextCursor.MoveAnchor)
+        cursor.setPosition(0, QTextCursor.MoveAnchor)
 
-        cursor.setPosition(len(self.toPlainText()), QtGui.QTextCursor.KeepAnchor)
+        cursor.setPosition(len(self.toPlainText()), QTextCursor.KeepAnchor)
 
         cursor.setCharFormat(format)
         self.blockSignals(False)
@@ -279,15 +281,15 @@ class CodeWindow(QPlainTextEdit):
         self.register_search()
 
     def label_search(self):
-        format = QtGui.QTextCharFormat()
-        #format.setBackground(QtGui.QBrush(QtGui.QColor("red")))
-        format.setForeground(QtGui.QColor(93, 166, 90))
-        format.setFontWeight(QtGui.QFont.Bold)
+        format = QTextCharFormat()
+
+        format.setForeground(QColor(93, 166, 90))
+        format.setFontWeight(QFont.Bold)
         cursor = self.textCursor()
         pattern = "[a-zA-Z]+\w*( |\s)*:"
 
 
-        regex = QtCore.QRegExp(pattern)
+        regex = QRegExp(pattern)
 
         # Process the displayed document
         self.labels = []
@@ -303,8 +305,8 @@ class CodeWindow(QPlainTextEdit):
             if label_name not in self.labels:
                 #print("APPEND ",label_name)
                 self.labels.append(label_name)
-            cursor.setPosition(index, QtGui.QTextCursor.MoveAnchor)
-            cursor.setPosition(index + den, QtGui.QTextCursor.KeepAnchor)
+            cursor.setPosition(index, QTextCursor.MoveAnchor)
+            cursor.setPosition(index + den, QTextCursor.KeepAnchor)
             cursor.setCharFormat(format)
             # Move to the next match
             pos = index + den
@@ -317,7 +319,7 @@ class CodeWindow(QPlainTextEdit):
             #print(str_label_list)
             pattern = "({})( |\s)+".format(str_label_list)
             pattern = "(( |\s)+|,)"+pattern
-            regex = QtCore.QRegExp(pattern)
+            regex = QRegExp(pattern)
 
             # Process the displayed document
             pos = 0
@@ -326,15 +328,15 @@ class CodeWindow(QPlainTextEdit):
             while (index != -1):
                 # Select the matched text and apply the desired format
                 den = regex.matchedLength()
-                cursor.setPosition(index, QtGui.QTextCursor.MoveAnchor)
-                cursor.setPosition(index + den, QtGui.QTextCursor.KeepAnchor)
+                cursor.setPosition(index, QTextCursor.MoveAnchor)
+                cursor.setPosition(index + den, QTextCursor.KeepAnchor)
                 cursor.setCharFormat(format)
                 # Move to the next match
                 pos = index + den
                 index = regex.indexIn(self.toPlainText(), pos)
 
             pattern = ","
-            regex = QtCore.QRegExp(pattern)
+            regex = QRegExp(pattern)
 
             # Process the displayed document
             pos = 0
@@ -343,15 +345,15 @@ class CodeWindow(QPlainTextEdit):
             while (index != -1):
                 # Select the matched text and apply the desired format
                 den = regex.matchedLength()
-                cursor.setPosition(index, QtGui.QTextCursor.MoveAnchor)
-                cursor.setPosition(index + den, QtGui.QTextCursor.KeepAnchor)
-                cursor.setCharFormat(QtGui.QTextCharFormat())
+                cursor.setPosition(index, QTextCursor.MoveAnchor)
+                cursor.setPosition(index + den, QTextCursor.KeepAnchor)
+                cursor.setCharFormat(QTextCharFormat())
                 # Move to the next match
                 pos = index + den
                 index = regex.indexIn(self.toPlainText(), pos)
 
-        format = QtGui.QTextCharFormat()
-        format.setBackground(QtGui.QBrush(QtGui.QColor("transparent")))
+        format = QTextCharFormat()
+        format.setBackground(QBrush(QColor("transparent")))
 
         self.setCurrentCharFormat(format)
 
@@ -361,13 +363,13 @@ class CodeWindow(QPlainTextEdit):
         self.blockSignals(False)
 
     def instruction_search(self):
-        format = QtGui.QTextCharFormat()
-        #format.setBackground(QtGui.QBrush(QtGui.QColor("red")))
-        format.setFontWeight(QtGui.QFont.Bold)
+        format = QTextCharFormat()
+
+        format.setFontWeight(QFont.Bold)
 
         cursor = self.textCursor()
         pattern = "(^|\n) *\s*(ADD|SUB|AND|OR|NOT|XOR|CMP|SHL|SHR|LOAD|STORE|JUMP|JZ|JNZ|LOADI) +"
-        regex = QtCore.QRegExp(pattern)
+        regex = QRegExp(pattern)
 
         # Process the displayed document
         pos = 0
@@ -381,31 +383,31 @@ class CodeWindow(QPlainTextEdit):
             x = regex.capturedTexts()
             #print(index, den,x)
             if x[2] in ['ADD','SUB']:
-                format.setForeground(QtGui.QColor(198, 40, 40))
+                format.setForeground(QColor(198, 40, 40))
 
             elif x[2] in ['AND','OR','NOT','XOR','SHR','SHL']:
-                format.setForeground(QtGui.QColor(30, 136, 229))
+                format.setForeground(QColor(30, 136, 229))
 
             elif x[2] == 'CMP':
-                format.setForeground(QtGui.QColor(178, 181, 5))
+                format.setForeground(QColor(178, 181, 5))
 
             elif x[2] in ['LOAD','STORE','LOADI']:
-                format.setForeground(QtGui.QColor(143, 214, 225))
+                format.setForeground(QColor(143, 214, 225))
             elif x[2] in ['JZ','JNZ','JUMP']:
-                format.setForeground(QtGui.QColor(230, 122, 59))
+                format.setForeground(QColor(230, 122, 59))
 
 
 
 
-            cursor.setPosition(index, QtGui.QTextCursor.MoveAnchor)
-            cursor.setPosition(index + den, QtGui.QTextCursor.KeepAnchor)
+            cursor.setPosition(index, QTextCursor.MoveAnchor)
+            cursor.setPosition(index + den, QTextCursor.KeepAnchor)
             cursor.setCharFormat(format)
             # Move to the next match
             pos = index + den
             index = regex.indexIn(self.toPlainText().upper(), pos)
 
-        format = QtGui.QTextCharFormat()
-        format.setBackground(QtGui.QBrush(QtGui.QColor("transparent")))
+        format = QTextCharFormat()
+        format.setBackground(QBrush(QColor("transparent")))
 
         self.nop_instruction()
 
@@ -413,14 +415,14 @@ class CodeWindow(QPlainTextEdit):
         self.blockSignals(False)
 
     def register_search(self):
-        format = QtGui.QTextCharFormat()
-        format.setForeground(QtGui.QColor(156, 156, 156))
-        format.setFontWeight(QtGui.QFont.Bold)
+        format = QTextCharFormat()
+        format.setForeground(QColor(156, 156, 156))
+        format.setFontWeight(QFont.Bold)
 
         cursor = self.textCursor()
 
         pattern = "R"+"|R".join(list(map(str,range(16))))
-        regex = QtCore.QRegExp(pattern)
+        regex = QRegExp(pattern)
 
         # Process the displayed document
         pos = 0
@@ -433,28 +435,28 @@ class CodeWindow(QPlainTextEdit):
             den = regex.matchedLength()
             x = regex.capturedTexts()
             #print(index, den,x)
-            cursor.setPosition(index, QtGui.QTextCursor.MoveAnchor)
-            cursor.setPosition(index + den, QtGui.QTextCursor.KeepAnchor)
+            cursor.setPosition(index, QTextCursor.MoveAnchor)
+            cursor.setPosition(index + den, QTextCursor.KeepAnchor)
             cursor.setCharFormat(format)
             # Move to the next match
             pos = index + den
             index = regex.indexIn(self.toPlainText().upper(), pos)
 
-        format = QtGui.QTextCharFormat()
-        format.setBackground(QtGui.QBrush(QtGui.QColor("transparent")))
+        format = QTextCharFormat()
+        format.setBackground(QBrush(QColor("transparent")))
 
         self.setCurrentCharFormat(format)
         self.blockSignals(False)
 
     def nop_instruction(self):
-        format = QtGui.QTextCharFormat()
-        format.setForeground(QtGui.QColor(191, 0, 188))
-        format.setFontWeight(QtGui.QFont.Bold)
+        format = QTextCharFormat()
+        format.setForeground(QColor(191, 0, 188))
+        format.setFontWeight(QFont.Bold)
 
         cursor = self.textCursor()
         pattern= "(^|\n) *\s*NOP( +|\s+)"
 
-        regex = QtCore.QRegExp(pattern)
+        regex = QRegExp(pattern)
 
         # Process the displayed document
         pos = 0
@@ -467,19 +469,32 @@ class CodeWindow(QPlainTextEdit):
             den = regex.matchedLength()
             x = regex.capturedTexts()
             #print(index, den,x)
-            cursor.setPosition(index, QtGui.QTextCursor.MoveAnchor)
-            cursor.setPosition(index + den, QtGui.QTextCursor.KeepAnchor)
+            cursor.setPosition(index, QTextCursor.MoveAnchor)
+            cursor.setPosition(index + den, QTextCursor.KeepAnchor)
             cursor.setCharFormat(format)
             # Move to the next match
             pos = index + den
             index = regex.indexIn(self.toPlainText().upper(), pos)
 
-        format = QtGui.QTextCharFormat()
-        format.setBackground(QtGui.QBrush(QtGui.QColor("transparent")))
+        format = QTextCharFormat()
+        format.setBackground(QBrush(QColor("transparent")))
 
         self.setCurrentCharFormat(format)
         self.blockSignals(False)
 
+    def mousePressEvent(self, QMouseEvent):
+
+        if not self.isReadOnly():
+            super().mousePressEvent(QMouseEvent)
+
+    def mouseDoubleClickEvent(self, QMouseEvent):
+
+        if not self.isReadOnly():
+            super().mousePressEvent(QMouseEvent)
+
+    def keyPressEvent(self, QKeyEvent):
+        if not self.isReadOnly():
+            super().keyPressEvent(QKeyEvent)
     # Move it to CodeBox Class
     def set_cursor_to_line(self, line, run = False):
 
@@ -511,6 +526,19 @@ class CodeWindow(QPlainTextEdit):
                 self.controller.emulator_buttons.forward_button.setDisabled(False)
                 self.controller.emulator_buttons.stop_run_button.setDisabled(False)
 
+    def set_cursor_last_line(self):
+
+        cursor = self.textCursor()
+        line = self.document().lineCount() - 1
+        instruction_block = self.document().findBlockByNumber(line)
+
+        cursor.setPosition(instruction_block.position())
+        self.setTextCursor(cursor)
+
+        self.controller.emulator_buttons.forward_button.setDisabled(True)
+        self.controller.emulator_buttons.forward_button.hide()
+        self.controller.emulator_buttons.forward_button.show()
+
     # Move it to CodeBox Class
     def text_changed(self):
 
@@ -533,6 +561,20 @@ class OpenFileButton(QPushButton):
         self.controller = controller
 
     def on_click(self):
+
+        emulator = self.controller.control_buttons.emulator_button.emulator
+
+        if emulator != None:
+            flag = emulator.isInitialized
+        else:
+            flag = False
+
+
+        if flag:
+            emulator.close()
+
+        self.controller.command_line.setText("")
+
         self.setStyleSheet("background-color:#353535;")
 
         options = QFileDialog.Options()
@@ -582,11 +624,11 @@ class SaveButton(QPushButton):
                 elif len(file_name) == 2 and file_name[1].lower() == 'asm':
                     self.controller.file_name = file_name[0] + '.asm'
                 else:
-                    self.controller.command_line.append("Please use Assembly Extension(*.asm)")
+                    self.controller.command_line.insertPlainText("Please use Assembly Extension(*.asm)")
                     return None
 
             else:
-                self.command_line.append("Please enter a file name to save!")
+                self.command_line.insertPlainText("Please enter a file name to save!")
                 return None
 
         file = open(self.controller.file_name, "w")
@@ -629,7 +671,7 @@ class CompileButton(QPushButton):
             return None
 
         asm = Assembler(self.controller.file_name)
-        self.controller.command_line.append("Compiling is starting...")
+        self.controller.command_line.insertPlainText("Compiling is starting...")
         self.controller.command_line.hide()
         self.controller.command_line.show()
 
@@ -639,17 +681,17 @@ class CompileButton(QPushButton):
             with open(bin_filename, 'w') as bin_file:
                 bin_file.write(bin)
 
-            self.controller.command_line.append("Compiling is done successfully.")
+            self.controller.command_line.insertPlainText("Compiling is done successfully.")
             self.controller.command_line.hide()
             self.controller.command_line.show()
 
-            self.controller.command_line.append("Machine Language codes are saved into {}.".format(bin_filename))
+            self.controller.command_line.insertPlainText("Machine Language codes are saved into {}.".format(bin_filename))
             self.controller.command_line.hide()
             self.controller.command_line.show()
 
         except Exception as err:
 
-            self.controller.command_line.append(str(err)+"\n")
+            self.controller.command_line.insertPlainText(str(err)+"\n")
 
 
 class ButtonController:
@@ -657,6 +699,7 @@ class ButtonController:
     def __init__(self,app):
 
         self.code_box = app.code_box
+        self.code_box.controller = self
         self.command_line = app.command_line
         self.file_name = None
 
@@ -686,13 +729,14 @@ class EmulateButton(QPushButton):
 
     def on_click(self):
 
+        self.controller.code_box.setReadOnly(True)
         if self.emulator.isInitialized:
             self.emulator.reset()
 
         if self.emulator.initialize() == None:
+            self.controller.code_box.setReadOnly(False)
             return None
 
-        self.controller.code_box.setReadOnly(True)
         self.controller.emulator_buttons.show()
         self.controller.emulator_buttons.quit_debug_mode_button.setDisabled(False)
 
@@ -786,7 +830,7 @@ class EmulatorWindow(QVBoxLayout):
         self.pc_text.setAlignment(Qt.AlignCenter)
         self.pc_value = QLineEdit()
         self.pc_value.setText("0x0000")
-        self.pc_value.setAlignment(QtCore.Qt.AlignCenter)
+        self.pc_value.setAlignment(Qt.AlignCenter)
         self.pc_value.setReadOnly(True)
         self.pc_value.setFixedWidth(213)
         PC = QHBoxLayout()
@@ -816,6 +860,7 @@ class EmulatorWindow(QVBoxLayout):
         register_label.setFixedWidth(40)
         register_label.setAlignment(Qt.AlignCenter)
         register_value = QLineEdit()
+
         register_value.setText("0x0000")
         register_value.setAlignment(Qt.AlignCenter)
         register_value.setReadOnly(True)
@@ -868,8 +913,7 @@ class Emulator:
         self.running = False
         self.isInitialized = False
 
-        #self.timer = QtCore.QTimer()
-        self.timer = QtCore.QTimer()
+        self.timer = QTimer()
         self.timer.timeout.connect(self.run_code)
 
         self.emulator_buttons.back_button.clicked.connect(self.step_back)
@@ -882,14 +926,14 @@ class Emulator:
         if self.controller.control_buttons.save_button.on_click() == None:
             return None
         asm = Assembler(self.controller.file_name)
-        self.controller.command_line.append("Compiling is starting...")
+        self.controller.command_line.insertPlainText("Compiling is starting...")
         self.controller.command_line.hide()
         self.controller.command_line.show()
 
         try:
             bin = asm.assembly()
 
-            self.controller.command_line.append("Compiling is done successfully.")
+            self.controller.command_line.insertPlainText("Compiling is done successfully.")
             self.controller.command_line.hide()
             self.controller.command_line.show()
 
@@ -903,10 +947,14 @@ class Emulator:
             self.controller.code_box.setPlainText(self.controller.code_box.toPlainText().rstrip() + "\n")
             self.controller.code_box.set_cursor_to_line(self.instructions[0].line - 1)
 
+            self.controller.control_buttons.save_button.on_click()
+
+
             self.emulator_buttons.back_button.setDisabled(True)
             self.emulator_buttons.stop_run_button.setDisabled(False)
             self.emulator_buttons.forward_button.setDisabled(False)
             self.emulator_buttons.reset_button.setDisabled(True)
+            #self.controller.control_buttons.save_button.setDisabled(True)
 
             self.isInitialized = True
 
@@ -914,7 +962,7 @@ class Emulator:
 
         except Exception as err:
 
-            self.controller.command_line.append(str(err)+"\n")
+            self.controller.command_line.insertPlainText(str(err)+"\n")
             return None
 
     # Move it to Emulator
@@ -937,7 +985,6 @@ class Emulator:
             Rs2 = int(instruction.operand3[1:])
 
             self.register_values[Rd] = abs(self.register_values[Rs1] - self.register_values[Rs2])
-
 
         elif op_code == "AND":
             Rd = int(instruction.operand1[1:])
@@ -1017,37 +1064,26 @@ class Emulator:
             pass
         elif op_code == "JUMP":
             jump_offset = instruction.machineCode[-8:]
-            print(jump_offset)
-
-            self.program_counter+=1
-
-            if jump_offset[0] == '1':
-                complement = int(str(11111111 - int(jump_offset)),2)+1
-                offset_temp = -complement
-
-            else:
-                offset_temp = int(jump_offset,2)
-
-
-            print("OFFSET",offset_temp)
-            self.program_counter += offset_temp
-            print("NEW PX",self.program_counter)
-            self.instruction_index = self.program_counter
-
-            if self.instruction_index != len(self.instructions)-1:
-                pass
-
-            self.program_counter-=1
-            self.instruction_index -= 1
-            #print()
-            # Jump to instruction where after add PC+1 to jumpoffset
+            self.jump(jump_offset)
 
         elif op_code == "NOP":
             pass
         elif op_code == "JZ":
-            pass
+            Rd = int(instruction.operand1[1:])
+
+            if self.register_values[Rd] == 0:
+                jump_offset = instruction.machineCode[-8:]
+
+                self.jump(jump_offset)
+
         elif op_code == "JNZ":
-            pass
+            Rd = int(instruction.operand1[1:])
+
+            if self.register_values[Rd] != 0:
+                jump_offset = instruction.machineCode[-8:]
+
+                self.jump(jump_offset)
+
         elif op_code == "LOADI":
             Rd = int(instruction.operand1[1:])
             Rs1 = int(instruction.operand2)
@@ -1059,6 +1095,27 @@ class Emulator:
         self.emulator_window.update_registers(self.program_counter, self.register_values)
 
         print(self.register_values,self.program_counter)
+
+    def jump(self,offset):
+        self.program_counter += 1
+
+        if offset[0] == '1':
+            complement = int(str(11111111 - int(offset)), 2) + 1
+            offset_temp = -complement
+
+        else:
+            offset_temp = int(offset, 2)
+
+        self.program_counter += offset_temp
+        self.instruction_index = self.program_counter
+
+        if self.instruction_index != len(self.instructions) - 1:
+            print("ERROR")
+            pass
+
+        self.program_counter -= 1
+        self.instruction_index -= 1
+
 
     # Move it to emulator
     def run_code(self):
@@ -1083,7 +1140,13 @@ class Emulator:
             self.execute()
             #print(self.operation_stack.print())
 
-            self.controller.code_box.set_cursor_to_line(self.instructions[self.instruction_index].line-1, run)
+
+            if self.instruction_index <= len(self.instructions)-1:
+                self.controller.code_box.set_cursor_to_line(self.instructions[self.instruction_index].line-1, run)
+
+            else:
+                # Set to last block
+                self.controller.code_box.set_cursor_last_line()
 
         elif self.instruction_index == len(self.instructions)-1:
             self.controller.code_box.set_cursor_to_line(current_block + 1, run)
@@ -1161,8 +1224,41 @@ class Emulator:
     def close(self):
 
         self.reset()
+        self.isInitialized = False
         self.controller.code_box.setReadOnly(False)
         self.emulator_buttons.hide()
+
+
+class CommandLine(QTextEdit):
+
+    def __init__(self):
+        super().__init__()
+        self.setStyleSheet("font-weight: bold;")
+        self.setReadOnly(True)
+        self.setMinimumHeight(100)
+        self.setMaximumHeight(150)
+        self.lineCount = 1
+
+    def insertPlainText(self, p_str):
+        cursor = self.textCursor()
+        cursor.movePosition(QTextCursor.End)
+        self.setTextCursor(cursor)
+
+        empty_space = 2
+        if self.lineCount>= 10:
+            empty_space -= 1
+
+        if self.lineCount >= 100:
+            empty_space -= 1
+
+        space = "&nbsp"*empty_space
+
+        line_number = "<pre style='color:#29a0ba'>{:3d} >> </pre]>".format(self.lineCount)
+        message     = "<span style='color:white'>{}</span><br>".format(p_str)
+        self.insertHtml(line_number+message)
+        self.lineCount += 1
+
+        #super().__init__()
 
 
 class MainWindow(QWidget):
@@ -1170,89 +1266,112 @@ class MainWindow(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
 
-        self.setWindowTitle("QTextEdit")
+        # Set window size and name
+        self.setWindowTitle("RISC-V Emulator & Compiler")
         self.resize(720, 480)
         self.setMinimumWidth(720)
 
-        self.command_line = QTextEdit()
+        # Definition of Core Components
+        self.command_line = CommandLine()
         self.code_box = CodeWindow()
-        self.numbers = NumberBar(self.code_box)
-
-
+        self.numbers = LineNumberBar(self.code_box)
         self.button_controller = ButtonController(self)
-        self.code_box.controller = self.button_controller
 
-        leftLayout = QVBoxLayout()
+        """
+        LAYOUT FOR MAIN WINDOW:
+        
+        +--------------------+-------------+
+        |    CONTROL BTNS    |             |
+        |--------------------|             |
+        |   EMULATOR BTNS    |             |
+        |--------------------|             |
+        | L |                |   EMULATOR  |
+        | I |                |    WINDOW   |          
+        | N |      CODE      |             |
+        | E |      BOX       |             |
+        |   |                |             |
+        | # |                |             |
+        |--------------------+-------------|
+        |               COMMAND            |
+        |                LINE              |
+        +----------------------------------+
+        
+        left_layout (Vertical) = CONTROL BTNS + EMULATOR BTNS + code_editor__layout
+        code_editor_layout (Horizontal) = LINE # + CODE BOX
+        top_layout (Horizontal) = left_layout + EMULATOR WINDOW
+        wrapper (Vertical)     = top_layout + COMMANDLINE 
+        """
 
-        code_editor_layout = QHBoxLayout()
-        code_editor_layout.setSpacing(1)
-        code_editor_layout.addWidget(self.numbers)
-        code_editor_layout.addWidget(self.code_box)
-
-
-        leftLayout.addLayout(self.button_controller.control_buttons)
-        leftLayout.addLayout(self.button_controller.emulator_buttons)
-        leftLayout.addLayout(code_editor_layout)
-
-
-
-
-
-        vertical_line = QVLine()
-        vertical_line.setStyleSheet("background-color: #126e82;")
-        upside = QHBoxLayout()
-        upside.addLayout(leftLayout)
-        upside.addWidget(vertical_line)
-        upside.addLayout(self.button_controller.control_buttons.emulator_button.emulator.emulator_window)
-
-
-        self.command_line.setStyleSheet("font-weight: bold;")
-        self.command_line.setReadOnly(True)
-        self.command_line.setText("")
-        self.command_line.setMinimumHeight(100)
-        self.command_line.setMaximumHeight(150)
-
-        outer = QVBoxLayout()
-        horizontal_line = QHLine()
-        horizontal_line.setStyleSheet("background-color: #126e82;")
-        outer.addLayout(upside)
-        outer.addWidget(horizontal_line)
-        outer.addWidget(self.command_line)
-        self.setLayout(outer)
-
-
-        #self.button_controller.control_button.open_button.clicked.connect(self.open_button_clicked)
-        #self.button_controller.control_button.save_button.clicked.connect(self.save_button_clicked)
-        #self.button_controller.control_button.compile_button.clicked.connect(self.compile_button_clicked)
-        #self.button_controller.control_button.debugger_button.clicked.connect(self.debugger_button_clicked)
-
-        #self.button_controller.debug_buttons.back_button.clicked.connect(self.back_button_clicked)
-        #self.button_controller.debug_buttons.stop_run_button.clicked.connect(self.stop_run_button_clicked)
-        #self.button_controller.debug_buttons.forward_button.clicked.connect(self.forward_button_clicked)
-        #self.button_controller.debug_buttons.reset_button.clicked.connect(self.reset_button_clicked)
-        #self.button_controller.debug_buttons.quit_debug_mode_button.clicked.connect(self.quit_emulator)
-
-
-
+        self.setLayout(self.wrapper())
 
     def paintEvent(self, event):
+
+        if self.button_controller.control_buttons.emulator_button.emulator != None:
+            flag = True
+        else:
+            flag = False
 
         left_selected_bracket = QTextEdit.ExtraSelection()
         right_selected_bracket = QTextEdit.ExtraSelection()
 
         highlighted_line = QTextEdit.ExtraSelection()
-        highlighted_line.format.setBackground(lineHighlightColor)
+        highlighted_line.format.setBackground(LineNumberBar.lineHighlightColor)
         highlighted_line.format.setProperty(QTextFormat.FullWidthSelection,QVariant(True))
         highlighted_line.cursor = self.code_box.textCursor()
         highlighted_line.cursor.clearSelection()
         self.code_box.setExtraSelections([highlighted_line,left_selected_bracket,right_selected_bracket])
 
+    def wrapper(self):
+        """
+        :return: Wrapper Layout for MainWindow
+        """
+        horizontal_line = QHLine()
 
+        layout = QVBoxLayout()
+        layout.addLayout(self.top_layout())
+        layout.addWidget(horizontal_line)
+        layout.addWidget(self.command_line)
 
+        return layout
 
+    def top_layout(self):
+        """
+        :return: Top Layout for MainWindow (EMULATOR_WINDOW + left_layout)
+        """
+        vertical_line = QVLine()
+
+        layout = QHBoxLayout()
+        layout.addLayout(self.left_layout())
+        layout.addWidget(vertical_line)
+        layout.addLayout(self.button_controller.control_buttons.emulator_button.emulator.emulator_window)
+
+        return layout
+
+    def left_layout(self):
+        """
+        :return: Left layout for MainWindow (CONTROL BTNS + EMULATOR BTNS + code_editor_layout)
+        """
+        layout = QVBoxLayout()
+        layout.addLayout(self.button_controller.control_buttons)
+        layout.addLayout(self.button_controller.emulator_buttons)
+        layout.addLayout(self.code_editor_layout())
+
+        return layout
+
+    def code_editor_layout(self):
+        """
+        :return: Code Editor Layout for MainWindow (Line Numbers + Code Box)
+        """
+        layout = QHBoxLayout()
+        layout.setSpacing(1)
+        layout.addWidget(self.numbers)
+        layout.addWidget(self.code_box)
+
+        return layout
 
 
 if __name__ == '__main__':
+
     app = QApplication(sys.argv)
     # Force the style to be the same on all OSs:
     app.setStyle("Fusion")
@@ -1275,6 +1394,7 @@ if __name__ == '__main__':
     palette.setColor(QPalette.Disabled, QPalette.Button, QColor(30, 30, 30))
     palette.setColor(QPalette.Disabled, QPalette.ButtonText, QColor(90, 90, 90))
     app.setPalette(palette)
+
     win = MainWindow()
     win.show()
     sys.exit(app.exec_())
