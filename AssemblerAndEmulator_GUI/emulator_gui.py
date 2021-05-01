@@ -5,14 +5,37 @@ from assembler import  Assembler
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
+import numpy as np
 
 
-# ToDo: Execute and Memory instructions
-# ToDo: Add Memory for Memory Instructions (2^16 Address, 16-bit word length = 16x2^16)
-# ToDo: Add Memory Explorer to show memory cell values
+# ToDo: Enhance Memory Explorer to show memory cell values
 # ToDo: Add Comments to Assembler
+# Enhancement: Execution steps can be achieve just using memory!
 
 # When there is an error, highlight error line!
+
+class Memory:
+    ADDRESS_LENGTH = 16
+    MEM_SIZE = 2**(ADDRESS_LENGTH)
+
+    def __init__(self):
+        self.__memory = np.zeros(Memory.MEM_SIZE,dtype="int16")
+        self.viewer = None
+
+    def write(self, address, data):
+        self.__memory[address] = data
+        self.viewer.update_values()
+
+    def read(self, address):
+        #print(self.__memory[0:20])
+        return self.__memory[address]
+
+    def reset(self):
+        self.__memory.fill(0)
+
+    def block_write(self, starting_address, block):
+        self.__memory[starting_address:len(block)] = block
+        print(self.__memory[starting_address:len(block)])
 
 
 class PicButton(QAbstractButton):
@@ -849,6 +872,9 @@ class EmulatorWindow(QVBoxLayout):
 
             self.addLayout(horizontal_layout)
 
+        self.register_format = 0
+        # 0 -> HEX, 1 -> Unsigned Int, 2 -> Signed Int
+
     def register_template(self, i, layout,second_column = False):
         register_label = QLabel()
         if not second_column:
@@ -873,10 +899,25 @@ class EmulatorWindow(QVBoxLayout):
     # Move it to EmulatorWindow
     def update_registers(self, program_counter, register_values):
 
-        self.pc_value.setText("{:#06x}".format(program_counter))
+        if self.register_format == 0 or self.register_format == 1:
+            for idx, reg_value in enumerate(register_values):
+                if reg_value < 0:
+                    # 2's Complement
+                    register_values[idx] = 65535-abs(reg_value)+1
+
+
+
+        if self.register_format == 0:
+            string_format = "0x{:04X}"
+
+        else:
+            string_format = "{:5d}"
+
+
+        self.pc_value.setText(string_format.format(program_counter))
 
         for reg,reg_value in zip(self.register_list,register_values):
-            new_value = "{:#06x}".format(reg_value)
+            new_value = string_format.format(reg_value)
             if new_value != reg.text():
                 reg.setText(new_value)
                 reg.setStyleSheet("color:#00de3b")
@@ -901,6 +942,7 @@ class Emulator:
 
         self.emulator_window = EmulatorWindow()
 
+
         self.program_counter = 0
         self.register_values = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 
@@ -909,6 +951,8 @@ class Emulator:
         self.instructions = []
         self.instruction_index = 0
         self.operation_stack = OperationStack()
+        self.memory = Memory()
+        self.memory_view = MemoryView(self.memory)
 
         self.running = False
         self.isInitialized = False
@@ -932,6 +976,14 @@ class Emulator:
 
         try:
             bin = asm.assembly()
+            instructions_bin = list(map(''.join, zip(*[iter(bin)]*16)))
+            instructions_bin = [int(instruction_bin,2) for instruction_bin in instructions_bin]
+
+            # Write instructions to memory
+            starting_address = 0
+            self.memory.block_write(starting_address, instructions_bin)
+            self.memory_view.update_values()
+            self.memory_view.show()
 
             self.controller.command_line.insertPlainText("Compiling is done successfully.")
             self.controller.command_line.hide()
@@ -948,7 +1000,6 @@ class Emulator:
             self.controller.code_box.set_cursor_to_line(self.instructions[0].line - 1)
 
             self.controller.control_buttons.save_button.on_click()
-
 
             self.emulator_buttons.back_button.setDisabled(True)
             self.emulator_buttons.stop_run_button.setDisabled(False)
@@ -1056,12 +1107,16 @@ class Emulator:
 
         elif op_code == "LOAD":
             Rd = int(instruction.operand1[1:])
-            Rs2 = int(instruction.operand2[1:])
+            Rs1 = int(instruction.operand2[1:])
 
-            #self.register_values[Rd] =
+            self.register_values[Rd] = self.memory.read(self.register_values[Rs1])
 
         elif op_code == "STORE":
-            pass
+            Rs1 = int(instruction.operand1[1:])
+            Rs2 = int(instruction.operand2[1:])
+
+            self.memory.write(self.register_values[Rs1], self.register_values[Rs2])
+
         elif op_code == "JUMP":
             jump_offset = instruction.machineCode[-8:]
             self.jump(jump_offset)
@@ -1260,6 +1315,155 @@ class CommandLine(QTextEdit):
 
         #super().__init__()
 
+# ToDo: When a button is pressed and disabled after press, it remains hovered after enabling this button.
+class MemoryView(QTableWidget):
+
+    def __init__(self, memory):
+        super().__init__()
+
+        self.memory = memory
+        self.memory.viewer = self
+
+        self.setRowCount(32)
+        self.setColumnCount(2)
+        header1 = QTableWidgetItem('Address')
+        header1.setBackground(QColor(9, 66, 79))
+        header1.setSizeHint(QSize(60, 25))
+        self.setHorizontalHeaderItem(0, header1)
+
+        header2 = QTableWidgetItem('Value')
+        header2.setSizeHint(QSize(80, 25))
+        header2.setBackground(QColor(9, 66, 79))
+        self.setHorizontalHeaderItem(1, header2)
+
+        for address in range(32):
+            item = QTableWidgetItem(str(address))
+            item.setTextAlignment(Qt.AlignCenter)
+            item.setBackground(QColor(67, 68, 69))
+            item.setFlags(Qt.ItemIsEnabled)
+            self.setItem(address, 0, QTableWidgetItem(item))
+
+        self.verticalHeader().setVisible(False)
+        self.setFixedWidth(256)
+        header = self.horizontalHeader()
+        header.setSectionResizeMode(0, QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(1, QHeaderView.ResizeToContents)
+
+        self.current_page = 1
+        self.page_size    = 32
+        self.total_page   = int((2**16)/self.page_size)
+
+        # BUTTONS AND NAVIGATION
+
+        self.first_page_button = PicButton("./assets/first_page")
+        self.back_button = PicButton("./assets/previous")
+        self.forward_button = PicButton("./assets/next")
+        self.last_page_button = PicButton("./assets/last_page")
+        self.page_label = QLabel()
+        self.page_label.setAlignment(Qt.AlignCenter)
+        self.page_label.setText(str(self.current_page)+" / "+str(self.total_page))
+        #self.page_label.setFixedWidth(50)
+        self.forward_button.setDisabled(False)
+        self.last_page_button.setDisabled(False)
+
+        self.forward_button.clicked.connect(self.next_page)
+        self.back_button.clicked.connect(self.previous_page)
+        self.first_page_button.clicked.connect(self.first_page)
+        self.last_page_button.clicked.connect(self.last_page)
+
+        self.preview_format = 0
+        # 0 -> HEX, 1 -> Unsigned Int, 2-> Signed Int
+
+    def update_page_label(self):
+        self.page_label.setText(str(self.current_page) + " / " + str(self.total_page))
+
+    def last_page(self):
+        self.current_page = self.total_page - 1
+        self.next_page()
+
+    def first_page(self):
+        self.current_page = 2
+        self.previous_page()
+
+    def next_page(self):
+
+        self.current_page += 1
+
+        self.update_values()
+
+        self.update_page_label()
+
+        if self.current_page == self.total_page:
+            self.forward_button.setDisabled(True)
+            self.last_page_button.setDisabled(True)
+
+        self.back_button.setDisabled(False)
+        self.first_page_button.setDisabled(False)
+
+
+    def previous_page(self):
+
+        self.current_page -= 1
+
+        self.update_values()
+        self.update_page_label()
+
+        if self.current_page == 1:
+            self.back_button.setDisabled(True)
+            self.first_page_button.setDisabled(True)
+
+        self.forward_button.setDisabled(False)
+        self.last_page_button.setDisabled(False)
+
+
+    def full_layout(self):
+        layout = QVBoxLayout()
+        layout.addWidget(self)
+        button_layout = QHBoxLayout()
+        button_layout.addWidget(self.first_page_button)
+        button_layout.addWidget(self.back_button)
+        button_layout.addWidget(self.page_label)
+        button_layout.addWidget(self.forward_button)
+        button_layout.addWidget(self.last_page_button)
+        layout.addLayout(button_layout)
+        return layout
+
+    def update_values(self):
+
+        value_item = QTableWidgetItem()
+        value_item.setTextAlignment(Qt.AlignCenter)
+        value_item.setSizeHint(QSize(60, 15))
+        address_item = QTableWidgetItem()
+        address_item.setBackground(QColor(67, 68, 69))
+        address_item.setFlags(Qt.ItemIsEnabled)
+        value_item.setSizeHint(QSize(80, 15))
+
+
+
+
+        if self.preview_format == 0:
+            preview_format = "0x{:04X}"
+
+        else:
+            preview_format = "{:5d}"
+
+        lower_bound = (self.current_page-1)*self.page_size
+        upper_bound = self.current_page*self.page_size
+        for idx,address in enumerate(range(lower_bound,upper_bound)):
+            address_item.setText(preview_format.format(address))
+            self.setItem(idx, 0, QTableWidgetItem(address_item))
+
+            value = self.memory.read(address)
+
+            if self.preview_format == 0 or self.preview_format == 1:
+                if value < 0:
+                    # 2's Complement
+                    value = 65535 - abs(value) + 1
+
+            value_item.setText(preview_format.format(value))
+            self.setItem(idx, 1, QTableWidgetItem(value_item))
+
+
 
 class MainWindow(QWidget):
 
@@ -1268,8 +1472,8 @@ class MainWindow(QWidget):
 
         # Set window size and name
         self.setWindowTitle("RISC-V Emulator & Compiler")
-        self.resize(720, 480)
-        self.setMinimumWidth(720)
+        self.resize(950, 480)
+        self.setMinimumWidth(950)
 
         # Definition of Core Components
         self.command_line = CommandLine()
@@ -1302,6 +1506,9 @@ class MainWindow(QWidget):
         wrapper (Vertical)     = top_layout + COMMANDLINE 
         """
 
+        #mem_view.wi
+
+
         self.setLayout(self.wrapper())
 
     def paintEvent(self, event):
@@ -1325,14 +1532,22 @@ class MainWindow(QWidget):
         """
         :return: Wrapper Layout for MainWindow
         """
+
+        outer_layout = QHBoxLayout()
+
         horizontal_line = QHLine()
+        vertical_line = QVLine()
 
         layout = QVBoxLayout()
         layout.addLayout(self.top_layout())
         layout.addWidget(horizontal_line)
         layout.addWidget(self.command_line)
 
-        return layout
+        outer_layout.addLayout(layout)
+        outer_layout.addWidget(vertical_line)
+        outer_layout.addLayout(self.button_controller.control_buttons.emulator_button.emulator.memory_view.full_layout())
+
+        return outer_layout
 
     def top_layout(self):
         """
