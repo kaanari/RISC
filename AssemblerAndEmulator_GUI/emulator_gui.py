@@ -6,6 +6,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 import numpy as np
+import re
 
 
 # ToDo: Enhance Memory Explorer to show memory cell values
@@ -1359,6 +1360,26 @@ class MemoryView(QTableWidget):
         self.back_button = PicButton("./assets/previous")
         self.forward_button = PicButton("./assets/next")
         self.last_page_button = PicButton("./assets/last_page")
+        self.search_button = PicButton("./assets/search")
+        self.search_button.setDisabled(False)
+
+        self.name_label = QLabel("Memory View")
+        self.name_label.setAlignment(Qt.AlignCenter)
+        self.name_label.setStyleSheet("color:white;font-weight:bold;")
+
+        self.search_box = QLineEdit()
+        self.search_box.setFixedWidth(210)
+        self.re_pattern = "((0x|0X)[0-9A-Fa-f]{4})|([0-9]{1,5})"
+        pattern = QRegExp(self.re_pattern)
+        self.search_box.setValidator(QRegExpValidator(pattern))
+        self.search_box.returnPressed.connect(self.search)
+        self.search_box.setAlignment(Qt.AlignCenter)
+        self.search_box.setPlaceholderText("Hex(0xFFFF) or Integer(65535)")
+
+        self.search_label = QLabel("Search Address: ")
+        self.search_label.setFixedWidth(100)
+        self.search_label.setAlignment(Qt.AlignCenter)
+
         self.page_label = QLabel()
         self.page_label.setAlignment(Qt.AlignCenter)
         self.page_label.setText(str(self.current_page)+" / "+str(self.total_page))
@@ -1370,6 +1391,7 @@ class MemoryView(QTableWidget):
         self.back_button.clicked.connect(self.previous_page)
         self.first_page_button.clicked.connect(self.first_page)
         self.last_page_button.clicked.connect(self.last_page)
+        self.search_button.clicked.connect(self.search_clicked)
 
         self.preview_format = 0
         # 0 -> HEX, 1 -> Unsigned Int, 2-> Signed Int
@@ -1400,7 +1422,6 @@ class MemoryView(QTableWidget):
         self.back_button.setDisabled(False)
         self.first_page_button.setDisabled(False)
 
-
     def previous_page(self):
 
         self.current_page -= 1
@@ -1415,9 +1436,19 @@ class MemoryView(QTableWidget):
         self.forward_button.setDisabled(False)
         self.last_page_button.setDisabled(False)
 
-
     def full_layout(self):
         layout = QVBoxLayout()
+
+        search_layout = QHBoxLayout()
+        #search_layout.addWidget(self.search_label)
+        search_layout.addWidget(self.search_box)
+        search_layout.addWidget(self.search_button)
+
+        layout.addWidget(self.name_label)
+        layout.addWidget(QHLine())
+        #layout.addWidget(self.search_label) #
+        layout.addLayout(search_layout)
+        layout.addWidget(QHLine())
         layout.addWidget(self)
         button_layout = QHBoxLayout()
         button_layout.addWidget(self.first_page_button)
@@ -1425,6 +1456,7 @@ class MemoryView(QTableWidget):
         button_layout.addWidget(self.page_label)
         button_layout.addWidget(self.forward_button)
         button_layout.addWidget(self.last_page_button)
+        layout.addWidget(QHLine())
         layout.addLayout(button_layout)
         return layout
 
@@ -1462,6 +1494,46 @@ class MemoryView(QTableWidget):
 
             value_item.setText(preview_format.format(value))
             self.setItem(idx, 1, QTableWidgetItem(value_item))
+
+    def search(self):
+        number_str = self.search_box.text().upper()
+        self.search_box.setText("")
+        number = 0
+
+        if number_str[:2] == "0X":
+            number = int(number_str[2:], 16)
+
+        else:
+            number = int(number_str)
+
+        if number == 2**16:
+            # Console a bilgi yazdırılabilir
+            return None
+
+
+        # ToDo: Button disabling operations have problems!ßßß
+        self.current_page = self.calculate_page(number) + 1
+        if self.current_page == 0:
+            self.current_page += 1
+            self.previous_page()
+
+        else:
+            self.current_page -= 2
+            self.next_page()
+
+
+
+    def calculate_page(self, address):
+        page_num = int(address / self.page_size) + 1
+        return page_num
+
+
+
+    def search_clicked(self):
+        check_flag = re.fullmatch(self.re_pattern, self.search_box.text())
+
+        if not check_flag == None:
+            self.search()
 
 
 
