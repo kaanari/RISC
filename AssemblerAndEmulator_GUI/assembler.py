@@ -1,9 +1,14 @@
 from pyparsing import *
 # Islemciyi Implement edekren Jumplarrdaki sol biti sign extend(tum 1 kaydirilir) edip toplayin!
+# ToDo: Same Label name can not be used multiple times.
+
 import re
+from exeptions import LabelError, SyntaxError
 
 
 class Label:
+    REGISTER_NAMES = ["R0","R1","R2","R3","R4","R5","R6","R7","R8","R9","R10","R11","R12","R13","R14","R15"]
+    LABEL_NAMES = []
 
     def __init__(self,name,address,line):
         '''
@@ -12,8 +17,21 @@ class Label:
         :param name: Name of Assembly Label
         :param address: Corresponding Memory Address of the Label
         '''
+
+        if name in Label.LABEL_NAMES:
+            raise LabelError(line, name, 2)
+
+        if name in Label.REGISTER_NAMES or name in list(Instruction.OPCODE.keys()):
+            raise LabelError(line, name, 1)
+
+
         self.name    = name
         self.address = address
+        self.line = line
+
+        Label.LABEL_NAMES.append(name)
+
+
 
     @staticmethod
     def calculate_address(label_address,current_address):
@@ -257,6 +275,7 @@ class Assembler:
         '''
         Convert Assemly Code to Machine Language
         '''
+        Label.LABEL_NAMES = []
         self.lexer()
         self.label_correct()
         if print:
@@ -292,7 +311,7 @@ class Assembler:
                         print("1", res.group())
                         continue
                     else:
-                        raise Exception("ERROR: Syntax Error in Line {}!".format(lineCount+1))
+                        raise SyntaxError(lineCount+1)
 
             if parsedInstruction[0] in Assembler.ThreeOpInst:
                 operands = (parsedInstruction[1], parsedInstruction[3], parsedInstruction[5])
@@ -334,7 +353,7 @@ class Assembler:
                         instruction.machineCode += Label.calculate_address(jump_address, instruction.address)
 
                     except KeyError:
-                        raise Exception("Label {} can't be found in line {}!".format(instruction.operand2,instruction.line))
+                        raise LabelError(instruction.line, instruction.operand2)
 
 
                 elif instruction.opcode == "JUMP":
@@ -343,7 +362,7 @@ class Assembler:
                         instruction.machineCode += Label.calculate_address(jump_address, instruction.address)
 
                     except KeyError:
-                        raise Exception("Label {} can't be found in line {}!".format(instruction.operand2,instruction.line))
+                        raise LabelError(instruction.line, instruction.operand2)
 
     def output(self):
 
@@ -362,7 +381,7 @@ class Assembler:
 
 
 if __name__ == "__main__":
-    asm = Assembler("out2.asm")
+    asm = Assembler("son.asm")
 
     try:
         bin = asm.assembly()

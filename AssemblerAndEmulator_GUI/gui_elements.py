@@ -21,6 +21,8 @@ class QHLine(QFrame):
 class LineNumberBar(QWidget):
     lineBarColor = QColor("#39444a")
     lineHighlightColor = QColor("#39444a")
+    normal = QColor("#39444a")
+    error = QColor("#8a0000")
 
     def __init__(self, code_box,parent = None):
         super().__init__(parent)
@@ -93,6 +95,7 @@ class CodeWindow(QPlainTextEdit):
 
         self.controller = None
         self.textChanged.connect(self.text_changed)
+        self.isErrorSet = False
 
     def colorize(self):
         format = QTextCharFormat()
@@ -313,16 +316,26 @@ class CodeWindow(QPlainTextEdit):
         self.blockSignals(False)
 
     def mousePressEvent(self, QMouseEvent):
+        if self.isErrorSet:
+            LineNumberBar.lineHighlightColor = LineNumberBar.normal
+            self.isErrorSet = False
 
         if not self.isReadOnly():
             super().mousePressEvent(QMouseEvent)
 
     def mouseDoubleClickEvent(self, QMouseEvent):
+        if self.isErrorSet:
+            LineNumberBar.lineHighlightColor = LineNumberBar.normal
+            self.isErrorSet = False
 
         if not self.isReadOnly():
             super().mousePressEvent(QMouseEvent)
 
     def keyPressEvent(self, QKeyEvent):
+        if self.isErrorSet:
+            LineNumberBar.lineHighlightColor = LineNumberBar.normal
+            self.isErrorSet = False
+
         if not self.isReadOnly():
             super().keyPressEvent(QKeyEvent)
     # Move it to CodeBox Class

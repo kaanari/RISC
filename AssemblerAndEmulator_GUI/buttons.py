@@ -1,7 +1,8 @@
 from memory import *
 import emulator
 from assembler import Assembler
-from gui_elements import QHLine
+from gui_elements import QHLine, LineNumberBar
+
 
 import hashlib
 
@@ -185,7 +186,9 @@ class CompileButton(QPushButton):
             self.controller.command_line.show()
 
         except Exception as err:
-
+            self.controller.code_box.isErrorSet = True
+            LineNumberBar.lineHighlightColor = LineNumberBar.error
+            self.controller.code_box.set_cursor_to_line(err.line-1)
             self.controller.command_line.insertPlainText(str(err)+"\n")
 
 

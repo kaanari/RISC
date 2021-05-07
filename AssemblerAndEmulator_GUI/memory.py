@@ -9,7 +9,11 @@ from gui_elements import *
 from emulator import *
 import numpy as np
 
-
+# Signaling PRoblems between GUI thread and Table Worker Thread.
+# Worker thread changes GUI thread objects, it is not a good approach but it works now,
+# At the beginning, there are some non-critical errors related with these issues.
+# Can't be solved now. because I can't find any method to update table outsite the QT classes.
+# Not a critical problem but it solves a crucial problem. Just gives an error at the beginning
 class Memory:
     ADDRESS_LENGTH = 16
     MEM_SIZE = 2**(ADDRESS_LENGTH)
