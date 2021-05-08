@@ -3,7 +3,7 @@ from pyparsing import *
 # ToDo: Same Label name can not be used multiple times.
 
 import re
-from exeptions import LabelError, SyntaxError
+from exeptions import LabelError, SyntaxErrorAssembler
 
 
 class Label:
@@ -271,7 +271,7 @@ class Assembler:
         self.labels = []
         self.instructions = []
 
-    def assembly(self,print = True):
+    def assembly(self,print = False):
         '''
         Convert Assemly Code to Machine Language
         '''
@@ -308,10 +308,9 @@ class Assembler:
                     if res != None: #Label
                         label = Label(res.group()[:-1].strip(), currentAddress,lineCount+1)
                         self.labels.append(label)
-                        print("1", res.group())
                         continue
                     else:
-                        raise SyntaxError(lineCount+1)
+                        raise SyntaxErrorAssembler(lineCount+1)
 
             if parsedInstruction[0] in Assembler.ThreeOpInst:
                 operands = (parsedInstruction[1], parsedInstruction[3], parsedInstruction[5])
@@ -341,10 +340,9 @@ class Assembler:
         The reason why we can not in place completion of jump instruction is we can not know
         further label and its corresponding memory location address.
         '''
-        print(self.labels)
         if len(self.labels) != 0:
             label_names = {label.name: label.address for label in self.labels}
-            print(label_names)
+
             for instruction in self.instructions:
                 if instruction.opcode in ['JNZ', 'JZ']:
                     try:

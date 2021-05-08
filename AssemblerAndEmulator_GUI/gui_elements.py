@@ -136,8 +136,8 @@ class CodeWindow(QPlainTextEdit):
             den = regex.matchedLength()
             label_name = regex.capturedTexts()[0][:-1].strip()
             if label_name not in self.labels:
-                #print("APPEND ",label_name)
                 self.labels.append(label_name)
+
             cursor.setPosition(index, QTextCursor.MoveAnchor)
             cursor.setPosition(index + den, QTextCursor.KeepAnchor)
             cursor.setCharFormat(format)
@@ -145,11 +145,10 @@ class CodeWindow(QPlainTextEdit):
             pos = index + den
             index = regex.indexIn(self.toPlainText(), pos)
 
-        #print(self.labels)
         if self.labels:
             # Process the displayed documen
             str_label_list = '|'.join(self.labels)
-            #print(str_label_list)
+
             pattern = "({})( |\s)+".format(str_label_list)
             pattern = "(( |\s)+|,)"+pattern
             regex = QRegExp(pattern)
@@ -214,7 +213,7 @@ class CodeWindow(QPlainTextEdit):
             # Select the matched text and apply the desired format
             den = regex.matchedLength()
             x = regex.capturedTexts()
-            #print(index, den,x)
+
             if x[2] in ['ADD','SUB']:
                 format.setForeground(QColor(198, 40, 40))
 
@@ -267,7 +266,7 @@ class CodeWindow(QPlainTextEdit):
             # Select the matched text and apply the desired format
             den = regex.matchedLength()
             x = regex.capturedTexts()
-            #print(index, den,x)
+
             cursor.setPosition(index, QTextCursor.MoveAnchor)
             cursor.setPosition(index + den, QTextCursor.KeepAnchor)
             cursor.setCharFormat(format)
@@ -301,7 +300,7 @@ class CodeWindow(QPlainTextEdit):
             # Select the matched text and apply the desired format
             den = regex.matchedLength()
             x = regex.capturedTexts()
-            #print(index, den,x)
+
             cursor.setPosition(index, QTextCursor.MoveAnchor)
             cursor.setPosition(index + den, QTextCursor.KeepAnchor)
             cursor.setCharFormat(format)

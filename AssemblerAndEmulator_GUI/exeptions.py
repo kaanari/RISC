@@ -3,7 +3,6 @@ class LabelError(Exception):
 
     def __init__(self,line,name,error_type = 0):
 
-
         if error_type == 0:
             self.message = "Label {} can't be found in line {}!".format(name,line)
         elif error_type == 1:
@@ -16,7 +15,7 @@ class LabelError(Exception):
         super().__init__(self.message)
 
 
-class SyntaxError(Exception):
+class SyntaxErrorAssembler(Exception):
 
     def __init__(self,line):
         self.message = "Syntax Error in Line {}!".format(line)

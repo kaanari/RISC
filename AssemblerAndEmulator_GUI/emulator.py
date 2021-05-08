@@ -43,6 +43,7 @@ class OperationStack:
     def isEmpty(self):
         return len(self.__stack) == 0
 
+
 class EmulatorWindow(QHBoxLayout):
 
     def __init__(self, emulator):
@@ -168,7 +169,6 @@ class EmulatorWindow(QHBoxLayout):
             reg.setStyleSheet("color:white")
 
     def open_memview(self):
-        print("asd")
         if not self.memview_opened:
             self.open_memview_button.change_image("./assets/close_arrow")
             self.emulator.memory_view.show()
@@ -179,7 +179,6 @@ class EmulatorWindow(QHBoxLayout):
         self.open_memview_button.hide()
         self.open_memview_button.show()
         self.memview_opened = not self.memview_opened
-        pass
 
     def hide(self):
         self.empty.hide()
@@ -426,7 +425,6 @@ class Emulator:
         self.instruction_index += 1
         self.emulator_window.update_registers(self.program_counter, self.register_values)
 
-        print(self.register_values,self.program_counter)
 
     def jump(self,offset):
         self.program_counter += 1
@@ -441,22 +439,15 @@ class Emulator:
         self.program_counter += offset_temp
         self.instruction_index = self.program_counter
 
-        if self.instruction_index != len(self.instructions) - 1:
-            print("ERROR")
-            pass
-
         self.program_counter -= 1
         self.instruction_index -= 1
 
-
-    # Move it to emulator
     def run_code(self):
         if not self.step_into(True):
             self.stop_run_button_clicked()
             self.emulator_buttons.forward_button.setDisabled(True)
             self.emulator_buttons.stop_run_button.setDisabled(True)
             self.emulator_buttons.back_button.setDisabled(False)
-            #self.update()
 
     def step_into(self,run = False):
         cursor = self.controller.code_box.textCursor()
@@ -503,7 +494,6 @@ class Emulator:
 
         OCB = self.operation_stack.pop()
         operation = OCB.operation
-        print("OCB",OCB.registers)
 
         self.controller.code_box.set_cursor_to_line(operation.line - 1)
         self.program_counter = OCB.PC
@@ -515,7 +505,10 @@ class Emulator:
             self.emulator_buttons.back_button.setDisabled(True)
 
         self.emulator_window.update_registers(self.program_counter, self.register_values)
-        self.memory_view.update_values()
+
+        if operation.opcode == "STORE":
+            self.memory_view.update_values()
+
         if self.operation_stack.isEmpty():
             self.emulator_buttons.reset_button.setDisabled(True)
 

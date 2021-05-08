@@ -1,19 +1,15 @@
 import sys
-import hashlib
-from assembler import  Assembler
 
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
-import re
 
 from memory import *
 from buttons import *
 from gui_elements import *
 from emulator import *
 
-# Critical ToDo's:ßßß
-# ToDo: Overhead and slowdown happens when memory instructions are executed!
+# Critical ToDo's:
 # Step Back Instruction is unefficient because it refresh the Memory Preview each time
 
 # Additional ToDo's:
@@ -21,6 +17,7 @@ from emulator import *
 # Enhancement: Execution steps can be achieve just using memory!
 # Alternating color can be added to the Memory View!
 # ToDo: When there is an error, highlight error line!
+
 
 class MainWindow(QWidget):
 

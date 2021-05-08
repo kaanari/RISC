@@ -27,7 +27,6 @@ class Memory:
         self.viewer.update_value(address)
 
     def read(self, address):
-        #print(self.__memory[0:20])
         return self.__memory[address]
 
     def reset(self):
@@ -168,16 +167,15 @@ class MemoryView(QTableWidget):
         layout = QVBoxLayout()
 
         search_layout = QHBoxLayout()
-        #search_layout.addWidget(self.search_label)
         search_layout.addWidget(self.search_box)
         search_layout.addWidget(self.search_button)
 
         layout.addWidget(self.name_label)
         layout.addWidget(self.horizontal_line)
-        #layout.addWidget(self.search_label) #
         layout.addLayout(search_layout)
         layout.addWidget(self.horizontal_line2)
         layout.addWidget(self)
+
         button_layout = QHBoxLayout()
         button_layout.addWidget(self.first_page_button)
         button_layout.addWidget(self.back_button)
@@ -276,7 +274,7 @@ class MemoryView(QTableWidget):
 
 
 class Worker(QThread):
-    signal = pyqtSignal('PyQt_PyObject')
+    signal = pyqtSignal()
 
     def __init__(self,mem_view):
         super().__init__()
@@ -291,7 +289,6 @@ class Worker(QThread):
         self.address_item.setBackground(QColor(67, 68, 69))
         self.address_item.setFlags(Qt.ItemIsEnabled)
         self.value_item.setSizeHint(QSize(118, 15))
-
 
     def run(self):
 
@@ -319,4 +316,4 @@ class Worker(QThread):
             self.value_item.setText(self.preview_format.format(value))
             self.mem_view.setItem(idx, 1, QTableWidgetItem(self.value_item))
 
-        self.signal.emit("")
+        self.signal.emit()
