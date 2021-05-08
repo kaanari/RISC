@@ -290,6 +290,16 @@ class Worker(QThread):
         self.address_item.setFlags(Qt.ItemIsEnabled)
         self.value_item.setSizeHint(QSize(118, 15))
 
+        self.value_item2 = QTableWidgetItem()
+        self.value_item2.setTextAlignment(Qt.AlignCenter)
+        self.value_item2.setBackground(QColor(40, 40, 40))
+        self.value_item2.setSizeHint(QSize(118, 15))
+        self.address_item2 = QTableWidgetItem()
+        self.address_item2.setTextAlignment(Qt.AlignCenter)
+        self.address_item2.setBackground(QColor(87, 88, 89))
+        self.address_item2.setFlags(Qt.ItemIsEnabled)
+        self.value_item2.setSizeHint(QSize(118, 15))
+
     def run(self):
 
         if self.mem_view.preview_format == 0:
@@ -303,9 +313,8 @@ class Worker(QThread):
 
         """Long-running task."""
         for idx, address in enumerate(range(self.lower_bound, self.upper_bound)):
-            self.address_item.setText(self.preview_format.format(address))
-            self.mem_view.setItem(idx, 0, QTableWidgetItem(self.address_item))
 
+            # Read from memory and control sign
             value = self.mem_view.memory.read(address)
 
             if self.mem_view.preview_format == 0 or self.mem_view.preview_format == 1:
@@ -313,7 +322,23 @@ class Worker(QThread):
                     # 2's Complement
                     value = 65535 - abs(value) + 1
 
-            self.value_item.setText(self.preview_format.format(value))
-            self.mem_view.setItem(idx, 1, QTableWidgetItem(self.value_item))
+            # Add to the table
+
+            if not idx % 2:
+                self.address_item.setText(self.preview_format.format(address))
+                self.mem_view.setItem(idx, 0, QTableWidgetItem(self.address_item))
+
+                self.value_item.setText(self.preview_format.format(value))
+                self.mem_view.setItem(idx, 1, QTableWidgetItem(self.value_item))
+            else:
+                self.address_item2.setText(self.preview_format.format(address))
+                self.mem_view.setItem(idx, 0, QTableWidgetItem(self.address_item2))
+
+                self.value_item2.setText(self.preview_format.format(value))
+                self.mem_view.setItem(idx, 1, QTableWidgetItem(self.value_item2))
+
+
+
+
 
         self.signal.emit()
