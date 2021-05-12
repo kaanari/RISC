@@ -3,6 +3,9 @@ from buttons import *
 import hashlib
 
 class QVLine(QFrame):
+    """
+    Vertical Blue Line to be used in GUI
+    """
     def __init__(self):
         super(QVLine, self).__init__()
         self.setFrameShape(QFrame.VLine)
@@ -11,6 +14,9 @@ class QVLine(QFrame):
 
 
 class QHLine(QFrame):
+    """
+    Horizontal Blue Line to be used in GUI
+    """
     def __init__(self):
         super(QHLine, self).__init__()
         self.setFrameShape(QFrame.HLine)
@@ -19,6 +25,9 @@ class QHLine(QFrame):
 
 
 class LineNumberBar(QWidget):
+    """
+    Code Window Line Number Bar Class
+    """
     lineBarColor = QColor("#39444a")
     lineHighlightColor = QColor("#39444a")
     normal = QColor("#39444a")
@@ -86,7 +95,9 @@ class LineNumberBar(QWidget):
 
 
 class CodeWindow(QPlainTextEdit):
-
+    """
+    Code Window Class
+    """
     def __init__(self,parent = None):
         super(CodeWindow, self).__init__(parent)
         self.labels = []
@@ -98,6 +109,9 @@ class CodeWindow(QPlainTextEdit):
         self.isErrorSet = False
 
     def colorize(self):
+        """
+        Colorize the codes (Instructions, Labels, etc.)
+        """
         format = QTextCharFormat()
 
         format.setForeground(QColor(255, 255, 255))
@@ -114,6 +128,9 @@ class CodeWindow(QPlainTextEdit):
         self.register_search()
 
     def label_search(self):
+        """
+        Search and colorize label names
+        """
         format = QTextCharFormat()
 
         format.setForeground(QColor(93, 166, 90))
@@ -121,10 +138,8 @@ class CodeWindow(QPlainTextEdit):
         cursor = self.textCursor()
         pattern = "[a-zA-Z]+\w*( |\s)*:"
 
-
         regex = QRegExp(pattern)
 
-        # Process the displayed document
         self.labels = []
         pos = 0
         index = regex.indexIn(self.toPlainText(), pos)
@@ -146,14 +161,12 @@ class CodeWindow(QPlainTextEdit):
             index = regex.indexIn(self.toPlainText(), pos)
 
         if self.labels:
-            # Process the displayed documen
             str_label_list = '|'.join(self.labels)
 
             pattern = "({})( |\s)+".format(str_label_list)
             pattern = "(( |\s)+|,)"+pattern
             regex = QRegExp(pattern)
 
-            # Process the displayed document
             pos = 0
             index = regex.indexIn(self.toPlainText(), pos)
 
@@ -195,6 +208,9 @@ class CodeWindow(QPlainTextEdit):
         self.blockSignals(False)
 
     def instruction_search(self):
+        """
+        Search and colorize instruction names
+        """
         format = QTextCharFormat()
 
         format.setFontWeight(QFont.Bold)
@@ -229,8 +245,6 @@ class CodeWindow(QPlainTextEdit):
                 format.setForeground(QColor(230, 122, 59))
 
 
-
-
             cursor.setPosition(index, QTextCursor.MoveAnchor)
             cursor.setPosition(index + den, QTextCursor.KeepAnchor)
             cursor.setCharFormat(format)
@@ -247,6 +261,9 @@ class CodeWindow(QPlainTextEdit):
         self.blockSignals(False)
 
     def register_search(self):
+        """
+        Search and colorize the register names.
+        """
         format = QTextCharFormat()
         format.setForeground(QColor(156, 156, 156))
         format.setFontWeight(QFont.Bold)
@@ -256,7 +273,7 @@ class CodeWindow(QPlainTextEdit):
         pattern = "R"+"|R".join(list(map(str,range(16))))
         regex = QRegExp(pattern)
 
-        # Process the displayed document
+        # Start from the beginning to search
         pos = 0
         index = regex.indexIn(self.toPlainText().upper(), pos)
 

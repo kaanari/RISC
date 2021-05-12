@@ -11,6 +11,7 @@ from emulator import *
 
 # Additional ToDo's:
 # ToDo: Add Comments to Assembler
+# Enhancement: White Color mode can also be added.
 
 class MainWindow(QWidget):
 
@@ -53,17 +54,13 @@ class MainWindow(QWidget):
         wrapper (Vertical)     = top_layout + COMMANDLINE 
         """
 
-
         self.setLayout(self.wrapper())
 
-
     def paintEvent(self, event):
-
-        if self.button_controller.control_buttons.emulator_button.emulator != None:
-            flag = True
-        else:
-            flag = False
-
+        """
+        Works in every GUI painting process.
+        Draws highlighted line in the code editor.
+        """
         left_selected_bracket = QTextEdit.ExtraSelection()
         right_selected_bracket = QTextEdit.ExtraSelection()
 
@@ -78,7 +75,6 @@ class MainWindow(QWidget):
         """
         :return: Wrapper Layout for MainWindow
         """
-
         outer_layout = QHBoxLayout()
 
         horizontal_line = QHLine()
@@ -97,11 +93,8 @@ class MainWindow(QWidget):
         """
         :return: Top Layout for MainWindow (EMULATOR_WINDOW + left_layout)
         """
-        vertical_line = QVLine()
-
         layout = QHBoxLayout()
         layout.addLayout(self.left_layout())
-        #layout.addWidget(vertical_line)
         layout.addLayout(self.button_controller.control_buttons.emulator_button.emulator.emulator_window)
 
         return layout
