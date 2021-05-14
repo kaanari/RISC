@@ -1,0 +1,193 @@
+# Reading C:/intelFPGA_lite/19.1/modelsim_ase/tcl/vsim/pref.tcl
+# do CPU_run_msim_rtl_vhdl.do
+# if {[file exists rtl_work]} {
+# 	vdel -lib rtl_work -all
+# }
+# vlib rtl_work
+# vmap work rtl_work
+# Model Technology ModelSim - Intel FPGA Edition vmap 10.5b Lib Mapping Utility 2016.10 Oct  5 2016
+# vmap work rtl_work 
+# Copying C:/intelFPGA_lite/19.1/modelsim_ase/win32aloem/../modelsim.ini to modelsim.ini
+# Modifying modelsim.ini
+# 
+# vcom -93 -work work {D:/Quartus_Workspace/CPU/InstructionRegister.vhd}
+# Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  5 2016
+# Start time: 23:51:01 on May 14,2021
+# vcom -reportprogress 300 -93 -work work D:/Quartus_Workspace/CPU/InstructionRegister.vhd 
+# -- Loading package STANDARD
+# -- Loading package TEXTIO
+# -- Loading package std_logic_1164
+# -- Compiling entity InstructionRegister
+# -- Compiling architecture RTL of InstructionRegister
+# End time: 23:51:01 on May 14,2021, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# 
+# vcom -93 -work work {D:/Quartus_Workspace/CPU/TestBench_files/InstructionRegister_tb.vhd}
+# Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  5 2016
+# Start time: 23:51:01 on May 14,2021
+# vcom -reportprogress 300 -93 -work work D:/Quartus_Workspace/CPU/TestBench_files/InstructionRegister_tb.vhd 
+# -- Loading package STANDARD
+# -- Loading package TEXTIO
+# -- Loading package std_logic_1164
+# -- Compiling entity InstructionRegister_tb
+# -- Compiling architecture testbench of InstructionRegister_tb
+# End time: 23:51:01 on May 14,2021, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# 
+# vsim -t 1ps -L altera -L lpm -L sgate -L altera_mf -L altera_lnsim -L cyclonev -L rtl_work -L work -voptargs="+acc"  TB
+# vsim -t 1ps -L altera -L lpm -L sgate -L altera_mf -L altera_lnsim -L cyclonev -L rtl_work -L work -voptargs=""+acc"" TB 
+# Start time: 23:51:02 on May 14,2021
+# ** Error: (vsim-3170) Could not find 'TB'.
+#         Searched libraries:
+#             C:/intelFPGA_lite/19.1/modelsim_ase/altera/vhdl/altera
+#             C:/intelFPGA_lite/19.1/modelsim_ase/altera/vhdl/220model
+#             C:/intelFPGA_lite/19.1/modelsim_ase/altera/vhdl/sgate
+#             C:/intelFPGA_lite/19.1/modelsim_ase/altera/vhdl/altera_mf
+#             C:/intelFPGA_lite/19.1/modelsim_ase/altera/vhdl/altera_lnsim
+#             C:/intelFPGA_lite/19.1/modelsim_ase/altera/vhdl/cyclonev
+#             D:/Quartus_Workspace/CPU/simulation/modelsim/rtl_work
+#             D:/Quartus_Workspace/CPU/simulation/modelsim/rtl_work
+# Error loading design
+# Error: Error loading design
+#        Pausing macro execution
+# MACRO ./CPU_run_msim_rtl_vhdl.do PAUSED at line 12
+vsim work.instructionregister_tb(testbench)
+# vsim work.instructionregister_tb(testbench) 
+# Start time: 23:51:02 on May 14,2021
+# Loading std.standard
+# Loading std.textio(body)
+# Loading ieee.std_logic_1164(body)
+# Loading work.instructionregister_tb(testbench)
+# Loading work.instructionregister(rtl)
+add wave -position end  sim:/instructionregister_tb/CLK
+add wave -position end  sim:/instructionregister_tb/IR_write
+add wave -position end  sim:/instructionregister_tb/Immediate
+add wave -position end  sim:/instructionregister_tb/OpCode
+add wave -position end  sim:/instructionregister_tb/Rd
+add wave -position end  sim:/instructionregister_tb/Reset
+add wave -position end  sim:/instructionregister_tb/Rs1
+add wave -position end  sim:/instructionregister_tb/Rs2
+add wave -position end  sim:/instructionregister_tb/clk_period
+add wave -position end  sim:/instructionregister_tb/instruction
+run
+run
+run
+run
+# ** Error: Error found in case 3!
+#    Time: 400 ps  Iteration: 0  Instance: /instructionregister_tb
+run
+run
+run
+vsim work.instructionregister_tb
+# End time: 23:54:39 on May 14,2021, Elapsed time: 0:03:37
+# Errors: 2, Warnings: 0
+# vsim work.instructionregister_tb 
+# Start time: 23:54:39 on May 14,2021
+# Loading std.standard
+# Loading std.textio(body)
+# Loading ieee.std_logic_1164(body)
+# Loading work.instructionregister_tb(testbench)
+# Loading work.instructionregister(rtl)
+vsim work.instructionregister_tb
+# End time: 23:56:03 on May 14,2021, Elapsed time: 0:01:24
+# Errors: 0, Warnings: 0
+# vsim work.instructionregister_tb 
+# Start time: 23:56:03 on May 14,2021
+# Loading std.standard
+# Loading std.textio(body)
+# Loading ieee.std_logic_1164(body)
+# Loading work.instructionregister_tb(testbench)
+# Loading work.instructionregister(rtl)
+add wave -position end  sim:/instructionregister_tb/CLK
+add wave -position end  sim:/instructionregister_tb/IR_write
+add wave -position end  sim:/instructionregister_tb/Immediate
+add wave -position end  sim:/instructionregister_tb/OpCode
+add wave -position end  sim:/instructionregister_tb/Rd
+add wave -position end  sim:/instructionregister_tb/Reset
+add wave -position end  sim:/instructionregister_tb/Rs1
+add wave -position end  sim:/instructionregister_tb/Rs2
+add wave -position end  sim:/instructionregister_tb/clk_period
+add wave -position end  sim:/instructionregister_tb/instruction
+run
+vcom -93 -work work D:/Quartus_Workspace/CPU/TestBench_files/InstructionRegister_tb.vhd
+# Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  5 2016
+# Start time: 23:56:37 on May 14,2021
+# vcom -reportprogress 300 -93 -work work D:/Quartus_Workspace/CPU/TestBench_files/InstructionRegister_tb.vhd 
+# -- Loading package STANDARD
+# -- Loading package TEXTIO
+# -- Loading package std_logic_1164
+# -- Compiling entity InstructionRegister_tb
+# -- Compiling architecture testbench of InstructionRegister_tb
+# End time: 23:56:37 on May 14,2021, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+restart
+# Loading work.instructionregister_tb(testbench)
+run
+run
+run
+run
+# ** Error: Error found in case 3!
+#    Time: 400 ps  Iteration: 0  Instance: /instructionregister_tb
+run
+run
+vcom -93 -work work D:/Quartus_Workspace/CPU/TestBench_files/InstructionRegister_tb.vhd
+# Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  5 2016
+# Start time: 00:02:50 on May 15,2021
+# vcom -reportprogress 300 -93 -work work D:/Quartus_Workspace/CPU/TestBench_files/InstructionRegister_tb.vhd 
+# -- Loading package STANDARD
+# -- Loading package TEXTIO
+# -- Loading package std_logic_1164
+# -- Compiling entity InstructionRegister_tb
+# -- Compiling architecture testbench of InstructionRegister_tb
+# End time: 00:02:50 on May 15,2021, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+restart
+# Loading work.instructionregister_tb(testbench)
+run
+run
+run
+run
+# ** Error: Error found in case 3!
+#    Time: 400 ps  Iteration: 0  Instance: /instructionregister_tb
+run
+vcom -93 -work work D:/Quartus_Workspace/CPU/TestBench_files/InstructionRegister_tb.vhd
+# Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  5 2016
+# Start time: 00:03:52 on May 15,2021
+# vcom -reportprogress 300 -93 -work work D:/Quartus_Workspace/CPU/TestBench_files/InstructionRegister_tb.vhd 
+# -- Loading package STANDARD
+# -- Loading package TEXTIO
+# -- Loading package std_logic_1164
+# -- Compiling entity InstructionRegister_tb
+# -- Compiling architecture testbench of InstructionRegister_tb
+# End time: 00:03:52 on May 15,2021, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+restart
+# Loading work.instructionregister_tb(testbench)
+run
+run
+run
+run
+# ** Error: Error found in case 3!
+#    Time: 400 ps  Iteration: 0  Instance: /instructionregister_tb
+run
+vcom -93 -work work D:/Quartus_Workspace/CPU/TestBench_files/InstructionRegister_tb.vhd
+# Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  5 2016
+# Start time: 00:05:14 on May 15,2021
+# vcom -reportprogress 300 -93 -work work D:/Quartus_Workspace/CPU/TestBench_files/InstructionRegister_tb.vhd 
+# -- Loading package STANDARD
+# -- Loading package TEXTIO
+# -- Loading package std_logic_1164
+# -- Compiling entity InstructionRegister_tb
+# -- Compiling architecture testbench of InstructionRegister_tb
+# End time: 00:05:14 on May 15,2021, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+restart
+# Loading work.instructionregister_tb(testbench)
+run
+run
+run
+run
+run
+run
+# End time: 00:08:31 on May 15,2021, Elapsed time: 0:12:28
+# Errors: 3, Warnings: 0
