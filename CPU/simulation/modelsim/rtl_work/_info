@@ -7,82 +7,86 @@ z2
 !i10e 25
 !i10f 100
 cModel Technology
-Z0 dD:/Quartus_Workspace/CPU/simulation/modelsim
-Einstructionregister
-Z1 w1621022404
-Z2 DPx3 std 6 textio 0 22 zE1`LPoLg^DX3Oz^4Fj1K3
-Z3 DPx4 ieee 14 std_logic_1164 0 22 eNV`TJ_GofJTzYa?f<@Oe1
+Z0 dC:/Users/idman/Desktop/RISC-V/CPU/simulation/modelsim
+Egpreg_file
+Z1 w1621164962
+Z2 DPx4 ieee 11 numeric_std 0 22 :ASDNFgHXf_ih3J@9F3Ze1
+Z3 DPx3 std 6 textio 0 22 zE1`LPoLg^DX3Oz^4Fj1K3
+Z4 DPx4 ieee 14 std_logic_1164 0 22 eNV`TJ_GofJTzYa?f<@Oe1
 R0
-Z4 8D:/Quartus_Workspace/CPU/InstructionRegister.vhd
-Z5 FD:/Quartus_Workspace/CPU/InstructionRegister.vhd
+Z5 8C:/Users/idman/Desktop/RISC-V/CPU/GPReg_File.vhd
+Z6 FC:/Users/idman/Desktop/RISC-V/CPU/GPReg_File.vhd
 l0
-L4
-VB?0JOK8`_dVSBN<egYCG@1
-!s100 UKQke98]P6FK2M=SaCgNO3
-Z6 OV;C;10.5b;63
+L5
+Va?G@_oS`8ZaIEZVLiKLRB1
+!s100 z[^SNMOg_NHCCUPoiUaSg1
+Z7 OV;C;10.5b;63
 31
-Z7 !s110 1621025461
+Z8 !s110 1621167817
 !i10b 1
-Z8 !s108 1621025461.000000
-Z9 !s90 -reportprogress|300|-93|-work|work|D:/Quartus_Workspace/CPU/InstructionRegister.vhd|
-Z10 !s107 D:/Quartus_Workspace/CPU/InstructionRegister.vhd|
+Z9 !s108 1621167817.000000
+Z10 !s90 -reportprogress|300|-93|-work|work|C:/Users/idman/Desktop/RISC-V/CPU/GPReg_File.vhd|
+Z11 !s107 C:/Users/idman/Desktop/RISC-V/CPU/GPReg_File.vhd|
 !i113 1
-Z11 o-93 -work work
-Z12 tExplicit 1 CvgOpt 0
+Z12 o-93 -work work
+Z13 tExplicit 1 CvgOpt 0
 Artl
 R2
 R3
-DEx4 work 19 instructionregister 0 22 B?0JOK8`_dVSBN<egYCG@1
-l26
-L21
-VS5ajbi4?[G1RYcG>@iaNO0
-!s100 mfiaI8dVmdc3kJhO2OcDm0
-R6
-31
+R4
+DEx4 work 10 gpreg_file 0 22 a?G@_oS`8ZaIEZVLiKLRB1
+l32
+L26
+VeIJ9K9`UFL]^:ib7[HQ:c3
+!s100 1XS3@QHIZ5E3fk2>BN8aJ3
 R7
-!i10b 1
+31
 R8
+!i10b 1
 R9
 R10
-!i113 1
 R11
+!i113 1
 R12
-Einstructionregister_tb
-Z13 w1621026309
+R13
+Egpreg_file_tb
+Z14 w1621169604
 R2
 R3
+R4
 R0
-Z14 8D:/Quartus_Workspace/CPU/TestBench_files/InstructionRegister_tb.vhd
-Z15 FD:/Quartus_Workspace/CPU/TestBench_files/InstructionRegister_tb.vhd
+Z15 8C:/Users/idman/Desktop/RISC-V/CPU/TestBench_files/GPReg_File_tb.vhd
+Z16 FC:/Users/idman/Desktop/RISC-V/CPU/TestBench_files/GPReg_File_tb.vhd
 l0
-L4
-VJo>a=l`XG=VQ<VM9b`goL1
-!s100 RbUfZmefYB?`o=L0F@`cl0
-R6
+L5
+VHBeTEldNGIA:mmo9g8KHU2
+!s100 nBJZMjnB]Qz:Laz;JZCVB3
+R7
 31
-Z16 !s110 1621026314
+Z17 !s110 1621169627
 !i10b 1
-Z17 !s108 1621026314.000000
-Z18 !s90 -reportprogress|300|-93|-work|work|D:/Quartus_Workspace/CPU/TestBench_files/InstructionRegister_tb.vhd|
-Z19 !s107 D:/Quartus_Workspace/CPU/TestBench_files/InstructionRegister_tb.vhd|
+Z18 !s108 1621169627.000000
+Z19 !s90 -reportprogress|300|-93|-work|work|C:/Users/idman/Desktop/RISC-V/CPU/TestBench_files/GPReg_File_tb.vhd|
+Z20 !s107 C:/Users/idman/Desktop/RISC-V/CPU/TestBench_files/GPReg_File_tb.vhd|
 !i113 1
-R11
 R12
+R13
 Atestbench
 R2
 R3
-Z20 DEx4 work 22 instructionregister_tb 0 22 Jo>a=l`XG=VQ<VM9b`goL1
-l38
-L7
-VzL@]oNN@g=6L:04@YIzoY2
-!s100 eL`AnW2U7eGN^`3MJI[>b2
-R6
+R4
+Z21 DEx4 work 13 gpreg_file_tb 0 22 HBeTEldNGIA:mmo9g8KHU2
+l49
+L8
+V8Z6l^zRoj>Cz19YLK9FT22
+!s100 >hK8O9Hhz[H1NcDF?ocUz1
+R7
 31
-R16
-!i10b 1
 R17
+!i10b 1
 R18
 R19
+R20
 !i113 1
-R11
 R12
+R13

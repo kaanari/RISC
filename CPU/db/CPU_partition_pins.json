@@ -4,35 +4,131 @@
 			"name" : "Top",
 			"pins" : [
 				{
-					"name" : "OpCode[0]",
+					"name" : "data_Rs1[0]",
 					"strict" : false
 				},
 				{
-					"name" : "OpCode[1]",
+					"name" : "data_Rs1[1]",
 					"strict" : false
 				},
 				{
-					"name" : "OpCode[2]",
+					"name" : "data_Rs1[2]",
 					"strict" : false
 				},
 				{
-					"name" : "OpCode[3]",
+					"name" : "data_Rs1[3]",
 					"strict" : false
 				},
 				{
-					"name" : "Rd[0]",
+					"name" : "data_Rs1[4]",
 					"strict" : false
 				},
 				{
-					"name" : "Rd[1]",
+					"name" : "data_Rs1[5]",
 					"strict" : false
 				},
 				{
-					"name" : "Rd[2]",
+					"name" : "data_Rs1[6]",
 					"strict" : false
 				},
 				{
-					"name" : "Rd[3]",
+					"name" : "data_Rs1[7]",
+					"strict" : false
+				},
+				{
+					"name" : "data_Rs1[8]",
+					"strict" : false
+				},
+				{
+					"name" : "data_Rs1[9]",
+					"strict" : false
+				},
+				{
+					"name" : "data_Rs1[10]",
+					"strict" : false
+				},
+				{
+					"name" : "data_Rs1[11]",
+					"strict" : false
+				},
+				{
+					"name" : "data_Rs1[12]",
+					"strict" : false
+				},
+				{
+					"name" : "data_Rs1[13]",
+					"strict" : false
+				},
+				{
+					"name" : "data_Rs1[14]",
+					"strict" : false
+				},
+				{
+					"name" : "data_Rs1[15]",
+					"strict" : false
+				},
+				{
+					"name" : "data_Rs2[0]",
+					"strict" : false
+				},
+				{
+					"name" : "data_Rs2[1]",
+					"strict" : false
+				},
+				{
+					"name" : "data_Rs2[2]",
+					"strict" : false
+				},
+				{
+					"name" : "data_Rs2[3]",
+					"strict" : false
+				},
+				{
+					"name" : "data_Rs2[4]",
+					"strict" : false
+				},
+				{
+					"name" : "data_Rs2[5]",
+					"strict" : false
+				},
+				{
+					"name" : "data_Rs2[6]",
+					"strict" : false
+				},
+				{
+					"name" : "data_Rs2[7]",
+					"strict" : false
+				},
+				{
+					"name" : "data_Rs2[8]",
+					"strict" : false
+				},
+				{
+					"name" : "data_Rs2[9]",
+					"strict" : false
+				},
+				{
+					"name" : "data_Rs2[10]",
+					"strict" : false
+				},
+				{
+					"name" : "data_Rs2[11]",
+					"strict" : false
+				},
+				{
+					"name" : "data_Rs2[12]",
+					"strict" : false
+				},
+				{
+					"name" : "data_Rs2[13]",
+					"strict" : false
+				},
+				{
+					"name" : "data_Rs2[14]",
+					"strict" : false
+				},
+				{
+					"name" : "data_Rs2[15]",
 					"strict" : false
 				},
 				{
@@ -68,39 +164,7 @@
 					"strict" : false
 				},
 				{
-					"name" : "Immediate[0]",
-					"strict" : false
-				},
-				{
-					"name" : "Immediate[1]",
-					"strict" : false
-				},
-				{
-					"name" : "Immediate[2]",
-					"strict" : false
-				},
-				{
-					"name" : "Immediate[3]",
-					"strict" : false
-				},
-				{
-					"name" : "Immediate[4]",
-					"strict" : false
-				},
-				{
-					"name" : "Immediate[5]",
-					"strict" : false
-				},
-				{
-					"name" : "Immediate[6]",
-					"strict" : false
-				},
-				{
-					"name" : "Immediate[7]",
-					"strict" : false
-				},
-				{
-					"name" : "instruction[12]",
+					"name" : "data_in[0]",
 					"strict" : false
 				},
 				{
@@ -112,67 +176,83 @@
 					"strict" : false
 				},
 				{
-					"name" : "IR_write",
+					"name" : "Rd[1]",
 					"strict" : false
 				},
 				{
-					"name" : "instruction[13]",
+					"name" : "Rd[2]",
 					"strict" : false
 				},
 				{
-					"name" : "instruction[14]",
+					"name" : "Rd[3]",
 					"strict" : false
 				},
 				{
-					"name" : "instruction[15]",
+					"name" : "Rd[0]",
 					"strict" : false
 				},
 				{
-					"name" : "instruction[8]",
+					"name" : "GPRF_wr",
 					"strict" : false
 				},
 				{
-					"name" : "instruction[9]",
+					"name" : "data_in[1]",
 					"strict" : false
 				},
 				{
-					"name" : "instruction[10]",
+					"name" : "data_in[2]",
 					"strict" : false
 				},
 				{
-					"name" : "instruction[11]",
+					"name" : "data_in[3]",
 					"strict" : false
 				},
 				{
-					"name" : "instruction[4]",
+					"name" : "data_in[4]",
 					"strict" : false
 				},
 				{
-					"name" : "instruction[5]",
+					"name" : "data_in[5]",
 					"strict" : false
 				},
 				{
-					"name" : "instruction[6]",
+					"name" : "data_in[6]",
 					"strict" : false
 				},
 				{
-					"name" : "instruction[7]",
+					"name" : "data_in[7]",
 					"strict" : false
 				},
 				{
-					"name" : "instruction[0]",
+					"name" : "data_in[8]",
 					"strict" : false
 				},
 				{
-					"name" : "instruction[1]",
+					"name" : "data_in[9]",
 					"strict" : false
 				},
 				{
-					"name" : "instruction[2]",
+					"name" : "data_in[10]",
 					"strict" : false
 				},
 				{
-					"name" : "instruction[3]",
+					"name" : "data_in[11]",
+					"strict" : false
+				},
+				{
+					"name" : "data_in[12]",
+					"strict" : false
+				},
+				{
+					"name" : "data_in[13]",
+					"strict" : false
+				},
+				{
+					"name" : "data_in[14]",
+					"strict" : false
+				},
+				{
+					"name" : "data_in[15]",
 					"strict" : false
 				}
 			]

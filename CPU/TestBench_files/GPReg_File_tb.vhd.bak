@@ -1,0 +1,183 @@
+library IEEE;
+use IEEE.std_logic_1164.all;
+use IEEE.numeric_std.all;
+
+entity GPReg_File_tb is
+end GPReg_File_tb;
+
+architecture testbench of GPReg_File_tb is
+	
+	constant DATA_WIDTH 		: integer := 16;
+	constant REG_ADDR_WIDTH : integer := 4;
+	constant clk_period 		: time := 100 ps;
+	
+	signal finish_flag		: std_logic := '0'; 
+	
+	component GPReg_File is
+	
+		generic(
+					DATA_WIDTH 		: integer := 16;
+					REG_ADDR_WIDTH : integer := 4
+		);
+		
+		port(	
+				Rs1 			: in std_logic_vector((REG_ADDR_WIDTH-1) downto 0);
+				Rs2 			: in std_logic_vector((REG_ADDR_WIDTH-1) downto 0);
+				Rd  			: in std_logic_vector((REG_ADDR_WIDTH-1) downto 0);
+				GPRF_wr 		: in std_logic;
+				data_in 		: in std_logic_vector((DATA_WIDTH-1) downto 0);
+				CLK			: in std_logic;
+				Reset 		: in std_logic;
+				data_Rs1 	: out std_logic_vector((DATA_WIDTH-1) downto 0);
+				data_Rs2 	: out std_logic_vector((DATA_WIDTH-1) downto 0)
+			);
+
+	end component;
+
+	
+	signal Rs1 			: std_logic_vector((REG_ADDR_WIDTH-1) downto 0)  := (others => '0');
+	signal Rs2 			: std_logic_vector((REG_ADDR_WIDTH-1) downto 0)  := (others => '0');
+	signal Rd  			: std_logic_vector((REG_ADDR_WIDTH-1) downto 0)  := (others => '0');
+	signal GPRF_wr 	: std_logic := '0';
+	signal data_in 	: std_logic_vector((DATA_WIDTH-1) downto 0) := (others => '0');
+	signal CLK			: std_logic := '0';
+	signal Reset 		: std_logic := '0';
+	signal data_Rs1 	: std_logic_vector((DATA_WIDTH-1) downto 0) := (others => '0');
+	signal data_Rs2 	: std_logic_vector((DATA_WIDTH-1) downto 0) := (others => '0');
+	
+
+begin
+	
+	
+	UUT: GPReg_File generic map(DATA_WIDTH, REG_ADDR_WIDTH)
+						 port map(Rs1, Rs2, Rd, GPRF_wr, data_in, CLK, Reset, data_Rs1, data_Rs2);
+	
+	
+	Clock: process
+	begin
+	
+		CLK <= '0';
+		wait for clk_period/2;
+		CLK <= '1';
+		wait for clk_period/2;
+		
+		if finish_flag = '1' then
+			wait;
+		
+		end if; 
+	
+	end process;
+	
+	Stimulus: process
+		
+		variable case_num : integer range 0 to 100 := 1;
+	
+	begin
+	
+		Reset <= '1';
+		wait for clk_period;
+		Reset <= '0';
+		
+		assert data_Rs1 = x"0000" and data_Rs2 = x"0000"
+		report "There are error in case "& integer'image(case_num)& " !" 
+		severity error;
+		case_num := case_num + 1;
+		----------------------------------------------------------------
+		Rs1 		<= "0010";
+		Rs2 		<= "1010";
+		Rd			<= "1110";
+		data_in 	<= "1111010001010000";
+		
+		assert data_Rs1 = x"0000" and data_Rs2 = x"0000"
+		report "There are error in case "& integer'image(case_num)& " !" 
+		severity error;
+		case_num := case_num + 1;
+		
+		wait for clk_period;
+		----------------------------------------------------------------
+		Rs1		<= "1110";
+		Rs2 		<= "1010";
+		Rd			<= "1110";
+		data_in 	<= "1111010001010000";
+		GPRF_wr	<= '1';
+		
+		assert data_Rs1 = x"0000" and data_Rs2 = x"0000"
+		report "There are error in case "& integer'image(case_num)& " !" 
+		severity error;
+		case_num := case_num + 1;
+		
+		wait for clk_period;
+		
+		----------------------------------------------------------------
+		Rs1			<= "1110";
+		Rs2 		<= "1010";
+		Rd			<= "0000";
+		data_in 	<= "1111010001010000";
+		
+		assert data_Rs1 = "1111010001010000" and data_Rs2 = x"0000"
+		report "There are error in case "& integer'image(case_num)& " !" 
+		severity error;
+		case_num := case_num + 1;
+		
+		Reset <= '1';
+		wait for 10 ps;
+		
+		assert data_Rs1 = x"0000" and data_Rs2 = x"0000"
+		report "There are error in case "& integer'image(case_num)& " !" 
+		severity error;
+		case_num := case_num + 1;
+		
+		wait for clk_period*2-10 ps;
+		Reset <= '0';
+		----------------------------------------------------------------
+		Rs1		<= "1110";
+		Rs2 		<= "1010";
+		Rd			<= "0000";
+		data_in 	<= "0000010101010110";
+		
+		assert data_Rs1 = x"0000" and data_Rs2 = x"0000"
+		report "There are error in case "& integer'image(case_num)& " !" 
+		severity error;
+		case_num := case_num + 1;
+			
+		wait for clk_period;
+		----------------------------------------------------------------
+		Rs1			<= "1110";
+		Rs2 		<= "0000";
+		Rd			<= "0000";
+		data_in 	<= "1111111111111111";
+		
+		wait for 2 ps;
+		assert data_Rs1 = x"0000" and data_Rs2 = "0000010101010110"
+		report "There are error in case "& integer'image(case_num)& " !" 
+		severity error;
+		case_num := case_num + 1;
+		
+		wait for clk_period;
+		
+		----------------------------------------------------------------
+		Rs1		<= "0000";
+		Rs2 		<= "0000";
+		Rd			<= "0000";
+		data_in 	<= "0000000000000000";
+		GPRF_wr	<= '0';
+		
+		assert data_Rs1 = x"FFFF" and data_Rs2 = x"FFFF"
+		report "There are error in case "& integer'image(case_num)& " !" 
+		severity error;
+		case_num := case_num + 1;
+		
+		wait for clk_period;
+		
+		assert data_Rs1 = x"FFFF" and data_Rs2 = x"FFFF"
+		report "There are error in case "& integer'image(case_num)& " !" 
+		severity error;
+		case_num := case_num + 1;
+		
+		finish_flag <= '1';
+		wait;
+		
+	end process;
+	
+
+end testbench;
