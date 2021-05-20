@@ -1,11 +1,11 @@
-Analysis & Synthesis Status : Successful - Sun May 16 14:21:25 2021
+Analysis & Synthesis Status : Successful - Thu May 20 21:14:54 2021
 Quartus Prime Version : 19.1.0 Build 670 09/22/2019 SJ Lite Edition
 Revision Name : CPU
-Top-level Entity Name : GPReg_File
+Top-level Entity Name : OpcodeDecoder
 Family : Cyclone V
 Logic utilization (in ALMs) : N/A
-Total registers : 256
-Total pins : 63
+Total registers : 0
+Total pins : 20
 Total virtual pins : 0
 Total block memory bits : 0
 Total DSP Blocks : 0

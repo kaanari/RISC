@@ -8,85 +8,109 @@ z2
 !i10f 100
 cModel Technology
 Z0 dC:/Users/idman/Desktop/RISC-V/CPU/simulation/modelsim
-Egpreg_file
-Z1 w1621164962
-Z2 DPx4 ieee 11 numeric_std 0 22 :ASDNFgHXf_ih3J@9F3Ze1
-Z3 DPx3 std 6 textio 0 22 zE1`LPoLg^DX3Oz^4Fj1K3
-Z4 DPx4 ieee 14 std_logic_1164 0 22 eNV`TJ_GofJTzYa?f<@Oe1
+Pcpu_library
+Z1 DPx4 ieee 11 numeric_std 0 22 :ASDNFgHXf_ih3J@9F3Ze1
+Z2 DPx3 std 6 textio 0 22 zE1`LPoLg^DX3Oz^4Fj1K3
+Z3 DPx4 ieee 14 std_logic_1164 0 22 eNV`TJ_GofJTzYa?f<@Oe1
+w1621533394
 R0
-Z5 8C:/Users/idman/Desktop/RISC-V/CPU/GPReg_File.vhd
-Z6 FC:/Users/idman/Desktop/RISC-V/CPU/GPReg_File.vhd
+8C:/Users/idman/Desktop/RISC-V/CPU/CPU_library.vhd
+FC:/Users/idman/Desktop/RISC-V/CPU/CPU_library.vhd
 l0
 L5
-Va?G@_oS`8ZaIEZVLiKLRB1
-!s100 z[^SNMOg_NHCCUPoiUaSg1
-Z7 OV;C;10.5b;63
+Vlnd4F_e4J9fOJUhUCSO6O3
+!s100 WKaVblbbz9i;=j2=A^mPo2
+Z4 OV;C;10.5b;63
 31
-Z8 !s110 1621167817
+Z5 !s110 1621534619
 !i10b 1
-Z9 !s108 1621167817.000000
-Z10 !s90 -reportprogress|300|-93|-work|work|C:/Users/idman/Desktop/RISC-V/CPU/GPReg_File.vhd|
-Z11 !s107 C:/Users/idman/Desktop/RISC-V/CPU/GPReg_File.vhd|
+Z6 !s108 1621534619.000000
+!s90 -reportprogress|300|-93|-work|work|C:/Users/idman/Desktop/RISC-V/CPU/CPU_library.vhd|
+!s107 C:/Users/idman/Desktop/RISC-V/CPU/CPU_library.vhd|
 !i113 1
-Z12 o-93 -work work
-Z13 tExplicit 1 CvgOpt 0
-Artl
+Z7 o-93 -work work
+Z8 tExplicit 1 CvgOpt 0
+Eopcodedecoder
+Z9 w1621533463
+Z10 DPx4 work 11 cpu_library 0 22 lnd4F_e4J9fOJUhUCSO6O3
+R1
 R2
 R3
+R0
+Z11 8C:/Users/idman/Desktop/RISC-V/CPU/OpcodeDecoder.vhd
+Z12 FC:/Users/idman/Desktop/RISC-V/CPU/OpcodeDecoder.vhd
+l0
+L6
+V?BQ:1m`g`ahR2g2A9]?R20
+!s100 O`I5@BX[hUeVWTQDiRB:00
 R4
-DEx4 work 10 gpreg_file 0 22 a?G@_oS`8ZaIEZVLiKLRB1
-l32
-L26
-VeIJ9K9`UFL]^:ib7[HQ:c3
-!s100 1XS3@QHIZ5E3fk2>BN8aJ3
-R7
 31
+R5
+!i10b 1
+R6
+Z13 !s90 -reportprogress|300|-93|-work|work|C:/Users/idman/Desktop/RISC-V/CPU/OpcodeDecoder.vhd|
+Z14 !s107 C:/Users/idman/Desktop/RISC-V/CPU/OpcodeDecoder.vhd|
+!i113 1
+R7
 R8
-!i10b 1
-R9
+Artl
 R10
-R11
-!i113 1
-R12
-R13
-Egpreg_file_tb
-Z14 w1621169604
+R1
 R2
 R3
+DEx4 work 13 opcodedecoder 0 22 ?BQ:1m`g`ahR2g2A9]?R20
+l17
+L16
+VVH3DYB30I9HcACDL3I:>d2
+!s100 UCVTE4YfMhk;FofMJF;4M2
 R4
+31
+R5
+!i10b 1
+R6
+R13
+R14
+!i113 1
+R7
+R8
+Eopcodedecoder_tb
+Z15 w1621534475
+R1
+R2
+R3
 R0
-Z15 8C:/Users/idman/Desktop/RISC-V/CPU/TestBench_files/GPReg_File_tb.vhd
-Z16 FC:/Users/idman/Desktop/RISC-V/CPU/TestBench_files/GPReg_File_tb.vhd
+Z16 8C:/Users/idman/Desktop/RISC-V/CPU/TestBench_files/OpcodeDecoder_tb.vhd
+Z17 FC:/Users/idman/Desktop/RISC-V/CPU/TestBench_files/OpcodeDecoder_tb.vhd
 l0
 L5
-VHBeTEldNGIA:mmo9g8KHU2
-!s100 nBJZMjnB]Qz:Laz;JZCVB3
-R7
+V3UShlC_T[kNT=>aZ]PRWz2
+!s100 >m[FIggE4@ZWOBoc`:;EW2
+R4
 31
-Z17 !s110 1621169627
+R5
 !i10b 1
-Z18 !s108 1621169627.000000
-Z19 !s90 -reportprogress|300|-93|-work|work|C:/Users/idman/Desktop/RISC-V/CPU/TestBench_files/GPReg_File_tb.vhd|
-Z20 !s107 C:/Users/idman/Desktop/RISC-V/CPU/TestBench_files/GPReg_File_tb.vhd|
+R6
+Z18 !s90 -reportprogress|300|-93|-work|work|C:/Users/idman/Desktop/RISC-V/CPU/TestBench_files/OpcodeDecoder_tb.vhd|
+Z19 !s107 C:/Users/idman/Desktop/RISC-V/CPU/TestBench_files/OpcodeDecoder_tb.vhd|
 !i113 1
-R12
-R13
+R7
+R8
 Atestbench
+R1
 R2
 R3
-R4
-Z21 DEx4 work 13 gpreg_file_tb 0 22 HBeTEldNGIA:mmo9g8KHU2
-l49
+DEx4 work 16 opcodedecoder_tb 0 22 3UShlC_T[kNT=>aZ]PRWz2
+l26
 L8
-V8Z6l^zRoj>Cz19YLK9FT22
-!s100 >hK8O9Hhz[H1NcDF?ocUz1
-R7
+Vio:KX;FkoJm0d1NOYX93Y3
+!s100 M9Rc3llLCJCJ2;ccidLe@3
+R4
 31
-R17
+R5
 !i10b 1
+R6
 R18
 R19
-R20
 !i113 1
-R12
-R13
+R7
+R8
