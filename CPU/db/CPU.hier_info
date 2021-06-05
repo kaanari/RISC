@@ -1,4 +1,35 @@
-|OpcodeDecoder
+|ControlUnit
+OpCode[0] => OpcodeDecoder:OpDecoder.OpCode[0]
+OpCode[1] => OpcodeDecoder:OpDecoder.OpCode[1]
+OpCode[2] => OpcodeDecoder:OpDecoder.OpCode[2]
+OpCode[3] => OpcodeDecoder:OpDecoder.OpCode[3]
+CLK => currentState~1.DATAIN
+Reset => currentState~3.DATAIN
+MemtoReg << MemtoReg.DB_MAX_OUTPUT_PORT_TYPE
+GPRF_wr << GPRF_wr.DB_MAX_OUTPUT_PORT_TYPE
+IR_write << IR_write.DB_MAX_OUTPUT_PORT_TYPE
+Mem_wr << Mem_wr.DB_MAX_OUTPUT_PORT_TYPE
+Rs2_select << Selector0.DB_MAX_OUTPUT_PORT_TYPE
+PC_Wcond << PC_Wcond.DB_MAX_OUTPUT_PORT_TYPE
+Mem_read << Selector1.DB_MAX_OUTPUT_PORT_TYPE
+PC_write << PC_write.DB_MAX_OUTPUT_PORT_TYPE
+PC_source << WideOr2.DB_MAX_OUTPUT_PORT_TYPE
+ALU_op[0] << ALU_op.DB_MAX_OUTPUT_PORT_TYPE
+ALU_op[1] << Selector3.DB_MAX_OUTPUT_PORT_TYPE
+ALU_op[2] << Selector2.DB_MAX_OUTPUT_PORT_TYPE
+ALU_op[3] << ALU_op.DB_MAX_OUTPUT_PORT_TYPE
+ALU_src1 << ALU_src1.DB_MAX_OUTPUT_PORT_TYPE
+ALU_src2[0] << ALU_src2[0].DB_MAX_OUTPUT_PORT_TYPE
+ALU_src2[1] << Selector4.DB_MAX_OUTPUT_PORT_TYPE
+Jmp_enable << Rs2_select.DB_MAX_OUTPUT_PORT_TYPE
+IorD << IorD.DB_MAX_OUTPUT_PORT_TYPE
+Cu_state[0] << WideOr7.DB_MAX_OUTPUT_PORT_TYPE
+Cu_state[1] << WideOr6.DB_MAX_OUTPUT_PORT_TYPE
+Cu_state[2] << WideOr5.DB_MAX_OUTPUT_PORT_TYPE
+Cu_state[3] << Cu_state[3].DB_MAX_OUTPUT_PORT_TYPE
+
+
+|ControlUnit|OpcodeDecoder:OpDecoder
 OpCode[0] => Mux0.IN19
 OpCode[0] => Mux1.IN19
 OpCode[0] => Mux2.IN19

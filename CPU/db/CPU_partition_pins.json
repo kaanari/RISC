@@ -4,67 +4,91 @@
 			"name" : "Top",
 			"pins" : [
 				{
-					"name" : "Operation[0]",
+					"name" : "MemtoReg",
 					"strict" : false
 				},
 				{
-					"name" : "Operation[1]",
+					"name" : "GPRF_wr",
 					"strict" : false
 				},
 				{
-					"name" : "Operation[2]",
+					"name" : "IR_write",
 					"strict" : false
 				},
 				{
-					"name" : "Operation[3]",
+					"name" : "Mem_wr",
 					"strict" : false
 				},
 				{
-					"name" : "Operation[4]",
+					"name" : "Rs2_select",
 					"strict" : false
 				},
 				{
-					"name" : "Operation[5]",
+					"name" : "PC_Wcond",
 					"strict" : false
 				},
 				{
-					"name" : "Operation[6]",
+					"name" : "Mem_read",
 					"strict" : false
 				},
 				{
-					"name" : "Operation[7]",
+					"name" : "PC_write",
 					"strict" : false
 				},
 				{
-					"name" : "Operation[8]",
+					"name" : "PC_source",
 					"strict" : false
 				},
 				{
-					"name" : "Operation[9]",
+					"name" : "ALU_op[0]",
 					"strict" : false
 				},
 				{
-					"name" : "Operation[10]",
+					"name" : "ALU_op[1]",
 					"strict" : false
 				},
 				{
-					"name" : "Operation[11]",
+					"name" : "ALU_op[2]",
 					"strict" : false
 				},
 				{
-					"name" : "Operation[12]",
+					"name" : "ALU_op[3]",
 					"strict" : false
 				},
 				{
-					"name" : "Operation[13]",
+					"name" : "ALU_src1",
 					"strict" : false
 				},
 				{
-					"name" : "Operation[14]",
+					"name" : "ALU_src2[0]",
 					"strict" : false
 				},
 				{
-					"name" : "Operation[15]",
+					"name" : "ALU_src2[1]",
+					"strict" : false
+				},
+				{
+					"name" : "Jmp_enable",
+					"strict" : false
+				},
+				{
+					"name" : "IorD",
+					"strict" : false
+				},
+				{
+					"name" : "Cu_state[0]",
+					"strict" : false
+				},
+				{
+					"name" : "Cu_state[1]",
+					"strict" : false
+				},
+				{
+					"name" : "Cu_state[2]",
+					"strict" : false
+				},
+				{
+					"name" : "Cu_state[3]",
 					"strict" : false
 				},
 				{
@@ -72,15 +96,23 @@
 					"strict" : false
 				},
 				{
-					"name" : "OpCode[1]",
-					"strict" : false
-				},
-				{
 					"name" : "OpCode[2]",
 					"strict" : false
 				},
 				{
+					"name" : "OpCode[1]",
+					"strict" : false
+				},
+				{
 					"name" : "OpCode[3]",
+					"strict" : false
+				},
+				{
+					"name" : "CLK",
+					"strict" : false
+				},
+				{
+					"name" : "Reset",
 					"strict" : false
 				}
 			]

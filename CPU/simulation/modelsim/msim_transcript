@@ -12,18 +12,31 @@
 # 
 # vcom -93 -work work {C:/Users/idman/Desktop/RISC-V/CPU/CPU_library.vhd}
 # Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  5 2016
-# Start time: 21:16:59 on May 20,2021
+# Start time: 00:37:56 on Jun 06,2021
 # vcom -reportprogress 300 -93 -work work C:/Users/idman/Desktop/RISC-V/CPU/CPU_library.vhd 
 # -- Loading package STANDARD
 # -- Loading package TEXTIO
 # -- Loading package std_logic_1164
 # -- Loading package NUMERIC_STD
 # -- Compiling package CPU_library
-# End time: 21:16:59 on May 20,2021, Elapsed time: 0:00:00
+# End time: 00:37:56 on Jun 06,2021, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# vcom -93 -work work {C:/Users/idman/Desktop/RISC-V/CPU/ControlUnit.vhd}
+# Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  5 2016
+# Start time: 00:37:56 on Jun 06,2021
+# vcom -reportprogress 300 -93 -work work C:/Users/idman/Desktop/RISC-V/CPU/ControlUnit.vhd 
+# -- Loading package STANDARD
+# -- Loading package TEXTIO
+# -- Loading package std_logic_1164
+# -- Loading package NUMERIC_STD
+# -- Loading package CPU_library
+# -- Compiling entity ControlUnit
+# -- Compiling architecture RTL of ControlUnit
+# End time: 00:37:56 on Jun 06,2021, Elapsed time: 0:00:00
 # Errors: 0, Warnings: 0
 # vcom -93 -work work {C:/Users/idman/Desktop/RISC-V/CPU/OpcodeDecoder.vhd}
 # Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  5 2016
-# Start time: 21:16:59 on May 20,2021
+# Start time: 00:37:56 on Jun 06,2021
 # vcom -reportprogress 300 -93 -work work C:/Users/idman/Desktop/RISC-V/CPU/OpcodeDecoder.vhd 
 # -- Loading package STANDARD
 # -- Loading package TEXTIO
@@ -32,31 +45,33 @@
 # -- Loading package CPU_library
 # -- Compiling entity OpcodeDecoder
 # -- Compiling architecture RTL of OpcodeDecoder
-# End time: 21:16:59 on May 20,2021, Elapsed time: 0:00:00
+# End time: 00:37:56 on Jun 06,2021, Elapsed time: 0:00:00
 # Errors: 0, Warnings: 0
 # 
-# vcom -93 -work work {C:/Users/idman/Desktop/RISC-V/CPU/TestBench_files/OpcodeDecoder_tb.vhd}
+# vcom -93 -work work {C:/Users/idman/Desktop/RISC-V/CPU/TestBench_files/ControlUnit_tb.vhd}
 # Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  5 2016
-# Start time: 21:16:59 on May 20,2021
-# vcom -reportprogress 300 -93 -work work C:/Users/idman/Desktop/RISC-V/CPU/TestBench_files/OpcodeDecoder_tb.vhd 
+# Start time: 00:37:56 on Jun 06,2021
+# vcom -reportprogress 300 -93 -work work C:/Users/idman/Desktop/RISC-V/CPU/TestBench_files/ControlUnit_tb.vhd 
 # -- Loading package STANDARD
 # -- Loading package TEXTIO
 # -- Loading package std_logic_1164
 # -- Loading package NUMERIC_STD
-# -- Compiling entity OpcodeDecoder_tb
-# -- Compiling architecture testbench of OpcodeDecoder_tb
-# End time: 21:16:59 on May 20,2021, Elapsed time: 0:00:00
+# -- Loading package CPU_library
+# -- Compiling entity ControlUnit_tb
+# -- Compiling architecture Testbench of ControlUnit_tb
+# End time: 00:37:56 on Jun 06,2021, Elapsed time: 0:00:00
 # Errors: 0, Warnings: 0
 # 
-# vsim -t 1ps -L altera -L lpm -L sgate -L altera_mf -L altera_lnsim -L cyclonev -L rtl_work -L work -voptargs="+acc"  OpcodeDecoder_tb
-# vsim -t 1ps -L altera -L lpm -L sgate -L altera_mf -L altera_lnsim -L cyclonev -L rtl_work -L work -voptargs=""+acc"" OpcodeDecoder_tb 
-# Start time: 21:17:00 on May 20,2021
+# vsim -t 1ps -L altera -L lpm -L sgate -L altera_mf -L altera_lnsim -L cyclonev -L rtl_work -L work -voptargs="+acc"  ControlUnit_tb
+# vsim -t 1ps -L altera -L lpm -L sgate -L altera_mf -L altera_lnsim -L cyclonev -L rtl_work -L work -voptargs=""+acc"" ControlUnit_tb 
+# Start time: 00:37:56 on Jun 06,2021
 # Loading std.standard
 # Loading std.textio(body)
 # Loading ieee.std_logic_1164(body)
 # Loading ieee.numeric_std(body)
-# Loading work.opcodedecoder_tb(testbench)
 # Loading work.cpu_library
+# Loading work.controlunit_tb(testbench)
+# Loading work.controlunit(rtl)
 # Loading work.opcodedecoder(rtl)
 # 
 # add wave *
@@ -65,5 +80,5 @@
 # view signals
 # .main_pane.objects.interior.cs.body.tree
 # run -all
-# End time: 21:19:38 on May 20,2021, Elapsed time: 0:02:38
+# End time: 00:39:44 on Jun 06,2021, Elapsed time: 0:01:48
 # Errors: 0, Warnings: 0
