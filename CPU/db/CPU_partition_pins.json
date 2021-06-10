@@ -4,27 +4,7 @@
 			"name" : "Top",
 			"pins" : [
 				{
-					"name" : "MemtoReg",
-					"strict" : false
-				},
-				{
-					"name" : "GPRF_wr",
-					"strict" : false
-				},
-				{
-					"name" : "IR_write",
-					"strict" : false
-				},
-				{
-					"name" : "Mem_wr",
-					"strict" : false
-				},
-				{
-					"name" : "Rs2_select",
-					"strict" : false
-				},
-				{
-					"name" : "PC_Wcond",
+					"name" : "Mem_write",
 					"strict" : false
 				},
 				{
@@ -32,47 +12,67 @@
 					"strict" : false
 				},
 				{
-					"name" : "PC_write",
+					"name" : "i_address[0]",
 					"strict" : false
 				},
 				{
-					"name" : "PC_source",
+					"name" : "i_address[1]",
 					"strict" : false
 				},
 				{
-					"name" : "ALU_op[0]",
+					"name" : "i_address[2]",
 					"strict" : false
 				},
 				{
-					"name" : "ALU_op[1]",
+					"name" : "i_address[3]",
 					"strict" : false
 				},
 				{
-					"name" : "ALU_op[2]",
+					"name" : "i_address[4]",
 					"strict" : false
 				},
 				{
-					"name" : "ALU_op[3]",
+					"name" : "i_address[5]",
 					"strict" : false
 				},
 				{
-					"name" : "ALU_src1",
+					"name" : "i_address[6]",
 					"strict" : false
 				},
 				{
-					"name" : "ALU_src2[0]",
+					"name" : "i_address[7]",
 					"strict" : false
 				},
 				{
-					"name" : "ALU_src2[1]",
+					"name" : "i_address[8]",
 					"strict" : false
 				},
 				{
-					"name" : "Jmp_enable",
+					"name" : "i_address[9]",
 					"strict" : false
 				},
 				{
-					"name" : "IorD",
+					"name" : "i_address[10]",
+					"strict" : false
+				},
+				{
+					"name" : "i_address[11]",
+					"strict" : false
+				},
+				{
+					"name" : "i_address[12]",
+					"strict" : false
+				},
+				{
+					"name" : "i_address[13]",
+					"strict" : false
+				},
+				{
+					"name" : "i_address[14]",
+					"strict" : false
+				},
+				{
+					"name" : "i_address[15]",
 					"strict" : false
 				},
 				{
@@ -92,19 +92,27 @@
 					"strict" : false
 				},
 				{
-					"name" : "OpCode[0]",
+					"name" : "flags[0]",
 					"strict" : false
 				},
 				{
-					"name" : "OpCode[2]",
+					"name" : "flags[1]",
 					"strict" : false
 				},
 				{
-					"name" : "OpCode[1]",
+					"name" : "flags[2]",
 					"strict" : false
 				},
 				{
-					"name" : "OpCode[3]",
+					"name" : "flags[3]",
+					"strict" : false
+				},
+				{
+					"name" : "flags[4]",
+					"strict" : false
+				},
+				{
+					"name" : "instruction[12]",
 					"strict" : false
 				},
 				{
@@ -113,6 +121,66 @@
 				},
 				{
 					"name" : "Reset",
+					"strict" : false
+				},
+				{
+					"name" : "instruction[14]",
+					"strict" : false
+				},
+				{
+					"name" : "instruction[15]",
+					"strict" : false
+				},
+				{
+					"name" : "instruction[13]",
+					"strict" : false
+				},
+				{
+					"name" : "instruction[4]",
+					"strict" : false
+				},
+				{
+					"name" : "instruction[5]",
+					"strict" : false
+				},
+				{
+					"name" : "instruction[6]",
+					"strict" : false
+				},
+				{
+					"name" : "instruction[7]",
+					"strict" : false
+				},
+				{
+					"name" : "instruction[10]",
+					"strict" : false
+				},
+				{
+					"name" : "instruction[2]",
+					"strict" : false
+				},
+				{
+					"name" : "instruction[11]",
+					"strict" : false
+				},
+				{
+					"name" : "instruction[3]",
+					"strict" : false
+				},
+				{
+					"name" : "instruction[8]",
+					"strict" : false
+				},
+				{
+					"name" : "instruction[0]",
+					"strict" : false
+				},
+				{
+					"name" : "instruction[9]",
+					"strict" : false
+				},
+				{
+					"name" : "instruction[1]",
 					"strict" : false
 				}
 			]

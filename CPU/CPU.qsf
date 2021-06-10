@@ -39,7 +39,7 @@
 
 set_global_assignment -name FAMILY "Cyclone V"
 set_global_assignment -name DEVICE 5CSEMA5F31C6
-set_global_assignment -name TOP_LEVEL_ENTITY ControlUnit
+set_global_assignment -name TOP_LEVEL_ENTITY CPU
 set_global_assignment -name ORIGINAL_QUARTUS_VERSION 19.1.0
 set_global_assignment -name PROJECT_CREATION_TIME_DATE "21:45:25  MAY 14, 2021"
 set_global_assignment -name LAST_QUARTUS_VERSION "19.1.0 Lite Edition"
@@ -52,39 +52,49 @@ set_global_assignment -name EDA_GENERATE_FUNCTIONAL_NETLIST OFF -section_id eda_
 set_global_assignment -name EDA_GENERATE_FUNCTIONAL_NETLIST OFF -section_id eda_board_design_symbol
 set_global_assignment -name EDA_GENERATE_FUNCTIONAL_NETLIST OFF -section_id eda_board_design_signal_integrity
 set_global_assignment -name EDA_GENERATE_FUNCTIONAL_NETLIST OFF -section_id eda_board_design_boundary_scan
-set_global_assignment -name VHDL_FILE InstructionRegister.vhd
-set_global_assignment -name VHDL_FILE TestBench_files/InstructionRegister_tb.vhd
 set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
 set_global_assignment -name MAX_CORE_JUNCTION_TEMP 85
 set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "23 MM HEAT SINK WITH 200 LFPM AIRFLOW"
 set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
 set_global_assignment -name EDA_TEST_BENCH_ENABLE_STATUS TEST_BENCH_MODE -section_id eda_simulation
-set_global_assignment -name EDA_NATIVELINK_SIMULATION_TEST_BENCH ControlUnit_tb -section_id eda_simulation
-set_global_assignment -name VHDL_FILE GPReg_File.vhd
-set_global_assignment -name VHDL_FILE TestBench_files/GPReg_File_tb.vhd
+set_global_assignment -name EDA_NATIVELINK_SIMULATION_TEST_BENCH ArithmeticLogicUnit_TB -section_id eda_simulation
 set_global_assignment -name EDA_TEST_BENCH_NAME InstructionRegister_TB -section_id eda_simulation
 set_global_assignment -name EDA_DESIGN_INSTANCE_NAME NA -section_id InstructionRegister_TB
 set_global_assignment -name EDA_TEST_BENCH_MODULE_NAME InstructionRegister_TB -section_id InstructionRegister_TB
 set_global_assignment -name EDA_TEST_BENCH_NAME GPReg_File_TB -section_id eda_simulation
 set_global_assignment -name EDA_DESIGN_INSTANCE_NAME NA -section_id GPReg_File_TB
 set_global_assignment -name EDA_TEST_BENCH_MODULE_NAME GPReg_File_TB -section_id GPReg_File_TB
-set_global_assignment -name VHDL_FILE ControlUnit.vhd
-set_global_assignment -name VHDL_FILE CPU_library.vhd
-set_global_assignment -name VHDL_FILE OpcodeDecoder.vhd
-set_global_assignment -name VHDL_FILE TestBench_files/OpcodeDecoder.vhd
-set_global_assignment -name VHDL_FILE TestBench_files/OpcodeDecoder_tb.vhd
 set_global_assignment -name EDA_TEST_BENCH_NAME OpcodeDecoder_tb -section_id eda_simulation
 set_global_assignment -name EDA_DESIGN_INSTANCE_NAME NA -section_id OpcodeDecoder_tb
 set_global_assignment -name EDA_TEST_BENCH_MODULE_NAME OpcodeDecoder_tb -section_id OpcodeDecoder_tb
-set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
-set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
-set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
-set_global_assignment -name VHDL_FILE TestBench_files/ControlUnit_tb.vhd
-set_global_assignment -name EDA_TEST_BENCH_FILE TestBench_files/InstructionRegister_tb.vhd -section_id InstructionRegister_TB
-set_global_assignment -name EDA_TEST_BENCH_FILE TestBench_files/GPReg_File_tb.vhd -section_id GPReg_File_TB
-set_global_assignment -name EDA_TEST_BENCH_FILE TestBench_files/OpcodeDecoder_tb.vhd -section_id OpcodeDecoder_tb
 set_global_assignment -name EDA_TEST_BENCH_NAME ControlUnit_tb -section_id eda_simulation
 set_global_assignment -name EDA_DESIGN_INSTANCE_NAME NA -section_id ControlUnit_tb
 set_global_assignment -name EDA_TEST_BENCH_MODULE_NAME ControlUnit_tb -section_id ControlUnit_tb
+set_global_assignment -name EDA_TEST_BENCH_FILE TestBench_files/InstructionRegister_tb.vhd -section_id InstructionRegister_TB
+set_global_assignment -name EDA_TEST_BENCH_FILE TestBench_files/GPReg_File_tb.vhd -section_id GPReg_File_TB
+set_global_assignment -name EDA_TEST_BENCH_FILE TestBench_files/OpcodeDecoder_tb.vhd -section_id OpcodeDecoder_tb
 set_global_assignment -name EDA_TEST_BENCH_FILE TestBench_files/ControlUnit_tb.vhd -section_id ControlUnit_tb
+set_global_assignment -name EDA_TEST_BENCH_NAME ArithmeticLogicUnit_TB -section_id eda_simulation
+set_global_assignment -name EDA_DESIGN_INSTANCE_NAME NA -section_id ArithmeticLogicUnit_TB
+set_global_assignment -name EDA_TEST_BENCH_MODULE_NAME ArithmeticLogicUnit_TB -section_id ArithmeticLogicUnit_TB
+set_global_assignment -name EDA_TEST_BENCH_FILE TestBench_files/ArithmeticLogicUnit_TB.vhd -section_id ArithmeticLogicUnit_TB
+set_global_assignment -name VHDL_FILE SignExtent.vhd
+set_global_assignment -name VHDL_FILE TestBench_files/ArithmeticLogicUnit_TB.vhd
+set_global_assignment -name VHDL_FILE ArithmeticLogicUnit.vhd
+set_global_assignment -name VHDL_FILE InstructionRegister.vhd
+set_global_assignment -name VHDL_FILE TestBench_files/InstructionRegister_tb.vhd
+set_global_assignment -name VHDL_FILE GPReg_File.vhd
+set_global_assignment -name VHDL_FILE TestBench_files/GPReg_File_tb.vhd
+set_global_assignment -name VHDL_FILE ControlUnit.vhd
+set_global_assignment -name VHDL_FILE CPU_library.vhd
+set_global_assignment -name VHDL_FILE OpcodeDecoder.vhd
+set_global_assignment -name VHDL_FILE TestBench_files/OpcodeDecoder_tb.vhd
+set_global_assignment -name VHDL_FILE TestBench_files/ControlUnit_tb.vhd
+set_global_assignment -name VHDL_FILE CPU.vhd
+set_global_assignment -name VHDL_FILE MUX_2x1.vhd
+set_global_assignment -name VHDL_FILE Reg.vhd
+set_global_assignment -name VHDL_FILE MUX_4x1.vhd
+set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
+set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
+set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

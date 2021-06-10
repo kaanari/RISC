@@ -1,0 +1,135 @@
+LIBRARY IEEE;
+USE IEEE.std_logic_1164.ALL;
+USE IEEE.numeric_std.ALL;
+ENTITY TB_ALU IS
+END TB_ALU;
+ARCHITECTURE TB OF TB_ALU IS
+	COMPONENT ALU IS
+		PORT (
+			A : IN STD_LOGIC_VECTOR(2 DOWNTO 0);
+			B : IN STD_LOGIC_VECTOR(2 DOWNTO 0);
+			SEL : IN STD_LOGIC_VECTOR(3 DOWNTO 0);
+			Y : OUT STD_LOGIC_VECTOR(3 DOWNTO 0)
+		);
+	END COMPONENT;
+	SIGNAL A : STD_LOGIC_VECTOR(3 DOWNTO 0) := "0000";
+	SIGNAL B : STD_LOGIC_VECTOR(3 DOWNTO 0) := "0000";
+	SIGNAL SEL : STD_LOGIC_VECTOR(3 DOWNTO 0) := "0000";
+	SIGNAL Y : STD_LOGIC_VECTOR(3 DOWNTO 0);
+	SIGNAL instruction : STRING (1 TO 8);
+	CONSTANT op_time : TIME := 100 ps;
+	SIGNAL exp_res : UNSIGNED(3 DOWNTO 0) := "0000"; -- Expected Result
+	SIGNAL VALID : STD_LOGIC := '1';
+	SIGNAL err_count : INTEGER := 0;
+BEGIN
+	UUT : ALU
+	PORT MAP(A(2 DOWNTO 0), B(2 DOWNTO 0), SEL, Y);
+	Stimulus : PROCESS
+	BEGIN
+		A <= "0101";
+		B <= "0011";
+		FOR i IN 0 TO 15 LOOP
+			SEL <= std_logic_vector(to_unsigned(i, SEL'length));
+			WAIT FOR 1 ps;
+			IF exp_res /= unsigned(Y) THEN
+				valid <= '0';
+				err_count <= err_count + 1;
+			ELSE
+				valid <= '1';
+			END IF;
+			WAIT FOR op_time/2 - 1 ps;
+			ASSERT (exp_res = unsigned(Y))
+			REPORT "Unexpected Error WHEN " & instruction & "instruction"
+				SEVERITY error;
+				WAIT FOR op_time/2;
+		END LOOP;
+
+		A <= "0111";
+		B <= "0011";
+		FOR i IN 0 TO 15 LOOP
+			SEL <= std_logic_vector(to_unsigned(i, SEL'length));
+			WAIT FOR 1 ps;
+			IF exp_res /= unsigned(Y) THEN
+				valid <= '0';
+			ELSE
+				valid <= '1';
+			END IF;
+			WAIT FOR op_time/2 - 1 ps;
+			ASSERT (exp_res = unsigned(Y))
+			REPORT "Unexpected Error WHEN " & instruction & "instruction"
+				SEVERITY error;
+				WAIT FOR op_time/2;
+		END LOOP;
+		IF err_count = 0 THEN
+			REPORT "No error occured." SEVERITY note;
+		ELSE
+			REPORT "Total " & INTEGER'image(err_count) & " error(s) occured."
+				SEVERITY note;
+		END IF;
+		WAIT;
+	END PROCESS;
+	Check : PROCESS (SEL, A, B)
+		VARIABLE mult : UNSIGNED(7 DOWNTO 0); -- Expected Result
+	BEGIN
+		CASE to_integer(unsigned(SEL)) IS
+			WHEN 0 => exp_res <= unsigned(A);
+			WHEN 1 => exp_res <= unsigned(A) + 1;
+			WHEN 2 => exp_res <= unsigned(A) - 1;
+			WHEN 3 => exp_res <= unsigned(B);
+			WHEN 4 => exp_res <= unsigned(A) + unsigned(B);
+			WHEN 5 => exp_res <= unsigned(A) - unsigned(B);
+			WHEN 6 => 
+				mult := unsigned(A) * unsigned(B);
+				exp_res <= mult(3 DOWNTO 0);
+			WHEN 7 => exp_res <= "0000";
+			WHEN 8 => exp_res <= unsigned(NOT A);
+			WHEN 9 => exp_res <= unsigned(NOT B);
+			WHEN 10 => exp_res <= unsigned(A AND B);
+			WHEN 11 => exp_res <= unsigned(A OR B);
+			WHEN 12 => exp_res <= unsigned(A NAND B);
+			WHEN 13 => exp_res <= unsigned(A NOR B);
+			WHEN 14 => exp_res <= unsigned(A XOR B);
+			WHEN 15 => exp_res <= unsigned(A XNOR B);
+			WHEN OTHERS => exp_res <= "0000";
+		END CASE;
+	END PROCESS;
+
+	IDecoder : PROCESS (SEL)
+	BEGIN
+		CASE SEL IS
+			WHEN "0000" => 
+				instruction <= "A ";
+			WHEN "0001" => 
+				instruction <= "A+1 ";
+			WHEN "0010" => 
+				instruction <= "A-1 ";
+			WHEN "0011" => 
+				instruction <= "B ";
+			WHEN "0100" => 
+				instruction <= "A+B ";
+			WHEN "0101" => 
+				instruction <= "A-B ";
+			WHEN "0110" => 
+				instruction <= "AxB ";
+			WHEN "0111" => 
+				instruction <= "ZERO ";
+			WHEN "1000" => 
+				instruction <= "NOT A ";
+			WHEN "1001" => 
+				instruction <= "NOT B ";
+			WHEN "1010" => 
+				instruction <= "A AND B ";
+			WHEN "1011" => 
+				instruction <= "A OR B ";
+			WHEN "1100" => 
+				instruction <= "A NAND B";
+			WHEN "1101" => 
+				instruction <= "A NOR B ";
+			WHEN "1110" => 
+				instruction <= "A XOR B ";
+			WHEN "1111" => 
+				instruction <= "A XNOR B";
+			WHEN OTHERS => 
+		END CASE;
+	END PROCESS;
+END TB;

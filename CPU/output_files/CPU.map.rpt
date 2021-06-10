@@ -1,5 +1,5 @@
 Analysis & Synthesis report for CPU
-Sun Jun 06 00:33:14 2021
+Thu Jun 10 16:37:41 2021
 Quartus Prime Version 19.1.0 Build 670 09/22/2019 SJ Lite Edition
 
 
@@ -13,13 +13,29 @@ Quartus Prime Version 19.1.0 Build 670 09/22/2019 SJ Lite Edition
   5. Analysis & Synthesis Source Files Read
   6. Analysis & Synthesis Resource Usage Summary
   7. Analysis & Synthesis Resource Utilization by Entity
-  8. State Machine - |ControlUnit|currentState
+  8. State Machine - |CPU|ControlUnit:CU|currentState
   9. Registers Removed During Synthesis
  10. General Register Statistics
  11. Multiplexer Restructuring Statistics (Restructuring Performed)
- 12. Post-Synthesis Netlist Statistics for Top Partition
- 13. Elapsed Time Per Partition
- 14. Analysis & Synthesis Messages
+ 12. Parameter Settings for User Entity Instance: Top-level Entity: |CPU
+ 13. Parameter Settings for User Entity Instance: SignExtent:SignExt
+ 14. Parameter Settings for User Entity Instance: MUX_2x1:MUX_Rs2
+ 15. Parameter Settings for User Entity Instance: GPReg_File:Reg_File
+ 16. Parameter Settings for User Entity Instance: MUX_2x1:MUX_MoR
+ 17. Parameter Settings for User Entity Instance: Reg:MDR_Reg
+ 18. Parameter Settings for User Entity Instance: MUX_2x1:MUX1_ALU
+ 19. Parameter Settings for User Entity Instance: MUX_4x1:MUX2_ALU
+ 20. Parameter Settings for User Entity Instance: ArithmeticLogicUnit:ALU
+ 21. Parameter Settings for User Entity Instance: Reg:ALU_Reg
+ 22. Parameter Settings for User Entity Instance: MUX_2x1:MUX_PC
+ 23. Parameter Settings for User Entity Instance: Reg:PC_Reg
+ 24. Parameter Settings for User Entity Instance: MUX_2x1:MUX_IorD
+ 25. Port Connectivity Checks: "Reg:ALU_Reg"
+ 26. Port Connectivity Checks: "MUX_4x1:MUX2_ALU"
+ 27. Port Connectivity Checks: "Reg:MDR_Reg"
+ 28. Post-Synthesis Netlist Statistics for Top Partition
+ 29. Elapsed Time Per Partition
+ 30. Analysis & Synthesis Messages
 
 
 
@@ -46,14 +62,14 @@ https://fpgasoftware.intel.com/eula.
 +-------------------------------------------------------------------------------+
 ; Analysis & Synthesis Summary                                                  ;
 +---------------------------------+---------------------------------------------+
-; Analysis & Synthesis Status     ; Successful - Sun Jun 06 00:33:14 2021       ;
+; Analysis & Synthesis Status     ; Successful - Thu Jun 10 16:37:41 2021       ;
 ; Quartus Prime Version           ; 19.1.0 Build 670 09/22/2019 SJ Lite Edition ;
 ; Revision Name                   ; CPU                                         ;
-; Top-level Entity Name           ; ControlUnit                                 ;
+; Top-level Entity Name           ; CPU                                         ;
 ; Family                          ; Cyclone V                                   ;
 ; Logic utilization (in ALMs)     ; N/A                                         ;
-; Total registers                 ; 8                                           ;
-; Total pins                      ; 28                                          ;
+; Total registers                 ; 328                                         ;
+; Total pins                      ; 61                                          ;
 ; Total virtual pins              ; 0                                           ;
 ; Total block memory bits         ; 0                                           ;
 ; Total DSP Blocks                ; 0                                           ;
@@ -72,7 +88,7 @@ https://fpgasoftware.intel.com/eula.
 ; Option                                                                          ; Setting            ; Default Value      ;
 +---------------------------------------------------------------------------------+--------------------+--------------------+
 ; Device                                                                          ; 5CSEMA5F31C6       ;                    ;
-; Top-level entity name                                                           ; ControlUnit        ; CPU                ;
+; Top-level entity name                                                           ; CPU                ; CPU                ;
 ; Family name                                                                     ; Cyclone V          ; Cyclone V          ;
 ; Use smart compilation                                                           ; Off                ; Off                ;
 ; Enable parallel Assembler and Timing Analyzer during compilation                ; On                 ; On                 ;
@@ -166,61 +182,84 @@ https://fpgasoftware.intel.com/eula.
 ;                            ;             ;
 ; Usage by Processor         ; % Time Used ;
 ;     Processor 1            ; 100.0%      ;
-;     Processors 2-4         ;   0.0%      ;
+;     Processor 2            ;   0.0%      ;
+;     Processor 3            ;   0.0%      ;
+;     Processor 4            ;   0.0%      ;
 +----------------------------+-------------+
 
 
-+--------------------------------------------------------------------------------------------------------------------------------------+
-; Analysis & Synthesis Source Files Read                                                                                               ;
-+----------------------------------+-----------------+-----------------+-----------------------------------------------------+---------+
-; File Name with User-Entered Path ; Used in Netlist ; File Type       ; File Name with Absolute Path                        ; Library ;
-+----------------------------------+-----------------+-----------------+-----------------------------------------------------+---------+
-; ControlUnit.vhd                  ; yes             ; User VHDL File  ; C:/Users/idman/Desktop/RISC-V/CPU/ControlUnit.vhd   ;         ;
-; CPU_library.vhd                  ; yes             ; User VHDL File  ; C:/Users/idman/Desktop/RISC-V/CPU/CPU_library.vhd   ;         ;
-; OpcodeDecoder.vhd                ; yes             ; User VHDL File  ; C:/Users/idman/Desktop/RISC-V/CPU/OpcodeDecoder.vhd ;         ;
-+----------------------------------+-----------------+-----------------+-----------------------------------------------------+---------+
++--------------------------------------------------------------------------------------------------------------------------------------------+
+; Analysis & Synthesis Source Files Read                                                                                                     ;
++----------------------------------+-----------------+-----------------+-----------------------------------------------------------+---------+
+; File Name with User-Entered Path ; Used in Netlist ; File Type       ; File Name with Absolute Path                              ; Library ;
++----------------------------------+-----------------+-----------------+-----------------------------------------------------------+---------+
+; SignExtent.vhd                   ; yes             ; User VHDL File  ; C:/Users/idman/Desktop/RISC-V/CPU/SignExtent.vhd          ;         ;
+; ArithmeticLogicUnit.vhd          ; yes             ; User VHDL File  ; C:/Users/idman/Desktop/RISC-V/CPU/ArithmeticLogicUnit.vhd ;         ;
+; InstructionRegister.vhd          ; yes             ; User VHDL File  ; C:/Users/idman/Desktop/RISC-V/CPU/InstructionRegister.vhd ;         ;
+; GPReg_File.vhd                   ; yes             ; User VHDL File  ; C:/Users/idman/Desktop/RISC-V/CPU/GPReg_File.vhd          ;         ;
+; ControlUnit.vhd                  ; yes             ; User VHDL File  ; C:/Users/idman/Desktop/RISC-V/CPU/ControlUnit.vhd         ;         ;
+; CPU_library.vhd                  ; yes             ; User VHDL File  ; C:/Users/idman/Desktop/RISC-V/CPU/CPU_library.vhd         ;         ;
+; OpcodeDecoder.vhd                ; yes             ; User VHDL File  ; C:/Users/idman/Desktop/RISC-V/CPU/OpcodeDecoder.vhd       ;         ;
+; CPU.vhd                          ; yes             ; User VHDL File  ; C:/Users/idman/Desktop/RISC-V/CPU/CPU.vhd                 ;         ;
+; MUX_2x1.vhd                      ; yes             ; User VHDL File  ; C:/Users/idman/Desktop/RISC-V/CPU/MUX_2x1.vhd             ;         ;
+; Reg.vhd                          ; yes             ; User VHDL File  ; C:/Users/idman/Desktop/RISC-V/CPU/Reg.vhd                 ;         ;
+; MUX_4x1.vhd                      ; yes             ; User VHDL File  ; C:/Users/idman/Desktop/RISC-V/CPU/MUX_4x1.vhd             ;         ;
++----------------------------------+-----------------+-----------------+-----------------------------------------------------------+---------+
 
 
-+---------------------------------------------------------------+
-; Analysis & Synthesis Resource Usage Summary                   ;
-+---------------------------------------------+-----------------+
-; Resource                                    ; Usage           ;
-+---------------------------------------------+-----------------+
-; Estimate of Logic utilization (ALMs needed) ; 16              ;
-;                                             ;                 ;
-; Combinational ALUT usage for logic          ; 26              ;
-;     -- 7 input functions                    ; 0               ;
-;     -- 6 input functions                    ; 4               ;
-;     -- 5 input functions                    ; 12              ;
-;     -- 4 input functions                    ; 6               ;
-;     -- <=3 input functions                  ; 4               ;
-;                                             ;                 ;
-; Dedicated logic registers                   ; 8               ;
-;                                             ;                 ;
-; I/O pins                                    ; 28              ;
-;                                             ;                 ;
-; Total DSP Blocks                            ; 0               ;
-;                                             ;                 ;
-; Maximum fan-out node                        ; OpCode[3]~input ;
-; Maximum fan-out                             ; 17              ;
-; Total fan-out                               ; 191             ;
-; Average fan-out                             ; 2.12            ;
-+---------------------------------------------+-----------------+
++---------------------------------------------------------+
+; Analysis & Synthesis Resource Usage Summary             ;
++---------------------------------------------+-----------+
+; Resource                                    ; Usage     ;
++---------------------------------------------+-----------+
+; Estimate of Logic utilization (ALMs needed) ; 379       ;
+;                                             ;           ;
+; Combinational ALUT usage for logic          ; 492       ;
+;     -- 7 input functions                    ; 8         ;
+;     -- 6 input functions                    ; 225       ;
+;     -- 5 input functions                    ; 133       ;
+;     -- 4 input functions                    ; 30        ;
+;     -- <=3 input functions                  ; 96        ;
+;                                             ;           ;
+; Dedicated logic registers                   ; 328       ;
+;                                             ;           ;
+; I/O pins                                    ; 61        ;
+;                                             ;           ;
+; Total DSP Blocks                            ; 0         ;
+;                                             ;           ;
+; Maximum fan-out node                        ; CLK~input ;
+; Maximum fan-out                             ; 328       ;
+; Total fan-out                               ; 3890      ;
+; Average fan-out                             ; 4.13      ;
++---------------------------------------------+-----------+
 
 
-+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-; Analysis & Synthesis Resource Utilization by Entity                                                                                                                                    ;
-+----------------------------+---------------------+---------------------------+-------------------+------------+------+--------------+---------------------+-------------+--------------+
-; Compilation Hierarchy Node ; Combinational ALUTs ; Dedicated Logic Registers ; Block Memory Bits ; DSP Blocks ; Pins ; Virtual Pins ; Full Hierarchy Name ; Entity Name ; Library Name ;
-+----------------------------+---------------------+---------------------------+-------------------+------------+------+--------------+---------------------+-------------+--------------+
-; |ControlUnit               ; 26 (26)             ; 8 (8)                     ; 0                 ; 0          ; 28   ; 0            ; |ControlUnit        ; ControlUnit ; work         ;
-+----------------------------+---------------------+---------------------------+-------------------+------------+------+--------------+---------------------+-------------+--------------+
++-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; Analysis & Synthesis Resource Utilization by Entity                                                                                                                                                                         ;
++---------------------------------+---------------------+---------------------------+-------------------+------------+------+--------------+---------------------------------------------+---------------------+--------------+
+; Compilation Hierarchy Node      ; Combinational ALUTs ; Dedicated Logic Registers ; Block Memory Bits ; DSP Blocks ; Pins ; Virtual Pins ; Full Hierarchy Name                         ; Entity Name         ; Library Name ;
++---------------------------------+---------------------+---------------------------+-------------------+------------+------+--------------+---------------------------------------------+---------------------+--------------+
+; |CPU                            ; 492 (1)             ; 328 (0)                   ; 0                 ; 0          ; 61   ; 0            ; |CPU                                        ; CPU                 ; work         ;
+;    |ArithmeticLogicUnit:ALU|    ; 204 (204)           ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |CPU|ArithmeticLogicUnit:ALU                ; ArithmeticLogicUnit ; work         ;
+;    |ControlUnit:CU|             ; 24 (23)             ; 8 (8)                     ; 0                 ; 0          ; 0    ; 0            ; |CPU|ControlUnit:CU                         ; ControlUnit         ; work         ;
+;       |OpcodeDecoder:OpDecoder| ; 1 (1)               ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |CPU|ControlUnit:CU|OpcodeDecoder:OpDecoder ; OpcodeDecoder       ; work         ;
+;    |GPReg_File:Reg_File|        ; 96 (96)             ; 256 (256)                 ; 0                 ; 0          ; 0    ; 0            ; |CPU|GPReg_File:Reg_File                    ; GPReg_File          ; work         ;
+;    |InstructionRegister:IR|     ; 0 (0)               ; 16 (16)                   ; 0                 ; 0          ; 0    ; 0            ; |CPU|InstructionRegister:IR                 ; InstructionRegister ; work         ;
+;    |MUX_2x1:MUX1_ALU|           ; 16 (16)             ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |CPU|MUX_2x1:MUX1_ALU                       ; MUX_2x1             ; work         ;
+;    |MUX_2x1:MUX_IorD|           ; 16 (16)             ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |CPU|MUX_2x1:MUX_IorD                       ; MUX_2x1             ; work         ;
+;    |MUX_2x1:MUX_MoR|            ; 16 (16)             ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |CPU|MUX_2x1:MUX_MoR                        ; MUX_2x1             ; work         ;
+;    |MUX_2x1:MUX_Rs2|            ; 4 (4)               ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |CPU|MUX_2x1:MUX_Rs2                        ; MUX_2x1             ; work         ;
+;    |MUX_4x1:MUX2_ALU|           ; 115 (115)           ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |CPU|MUX_4x1:MUX2_ALU                       ; MUX_4x1             ; work         ;
+;    |Reg:ALU_Reg|                ; 0 (0)               ; 16 (16)                   ; 0                 ; 0          ; 0    ; 0            ; |CPU|Reg:ALU_Reg                            ; Reg                 ; work         ;
+;    |Reg:MDR_Reg|                ; 0 (0)               ; 16 (16)                   ; 0                 ; 0          ; 0    ; 0            ; |CPU|Reg:MDR_Reg                            ; Reg                 ; work         ;
+;    |Reg:PC_Reg|                 ; 0 (0)               ; 16 (16)                   ; 0                 ; 0          ; 0    ; 0            ; |CPU|Reg:PC_Reg                             ; Reg                 ; work         ;
++---------------------------------+---------------------+---------------------------+-------------------+------------+------+--------------+---------------------------------------------+---------------------+--------------+
 Note: For table entries with two numbers listed, the numbers in parentheses indicate the number of resources of the given type used by the specific entity alone. The numbers listed outside of parentheses indicate the total resources of the given type used by the specific entity and all of its sub-entities in the hierarchy.
 
 
 Encoding Type:  One-Hot
 +-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-; State Machine - |ControlUnit|currentState                                                                                                                                                                                         ;
+; State Machine - |CPU|ControlUnit:CU|currentState                                                                                                                                                                                  ;
 +-------------------------+------------------------+--------------------+-------------------------+----------------------+---------------------+--------------------+---------------------+--------------------+--------------------+
 ; Name                    ; currentState.WRITEBACK ; currentState.RTYPE ; currentState.MEM_ACCESS ; currentState.JNZTYPE ; currentState.JZTYPE ; currentState.JTYPE ; currentState.DECODE ; currentState.FETCH ; currentState.START ;
 +-------------------------+------------------------+--------------------+-------------------------+----------------------+---------------------+--------------------+---------------------+--------------------+--------------------+
@@ -241,7 +280,7 @@ Encoding Type:  One-Hot
 +---------------------------------------+--------------------+
 ; Register name                         ; Reason for Removal ;
 +---------------------------------------+--------------------+
-; currentState.START                    ; Lost fanout        ;
+; ControlUnit:CU|currentState.START     ; Lost fanout        ;
 ; Total Number of Removed Registers = 1 ;                    ;
 +---------------------------------------+--------------------+
 
@@ -251,23 +290,189 @@ Encoding Type:  One-Hot
 +----------------------------------------------+-------+
 ; Statistic                                    ; Value ;
 +----------------------------------------------+-------+
-; Total registers                              ; 8     ;
+; Total registers                              ; 328   ;
 ; Number of registers using Synchronous Clear  ; 0     ;
-; Number of registers using Synchronous Load   ; 0     ;
-; Number of registers using Asynchronous Clear ; 8     ;
+; Number of registers using Synchronous Load   ; 16    ;
+; Number of registers using Asynchronous Clear ; 328   ;
 ; Number of registers using Asynchronous Load  ; 0     ;
-; Number of registers using Clock Enable       ; 0     ;
+; Number of registers using Clock Enable       ; 288   ;
 ; Number of registers using Preset             ; 0     ;
 +----------------------------------------------+-------+
 
 
-+------------------------------------------------------------------------------------------------------------------------------------------+
-; Multiplexer Restructuring Statistics (Restructuring Performed)                                                                           ;
-+--------------------+-----------+---------------+----------------------+------------------------+------------+----------------------------+
-; Multiplexer Inputs ; Bus Width ; Baseline Area ; Area if Restructured ; Saving if Restructured ; Registered ; Example Multiplexer Output ;
-+--------------------+-----------+---------------+----------------------+------------------------+------------+----------------------------+
-; 7:1                ; 2 bits    ; 8 LEs         ; 8 LEs                ; 0 LEs                  ; No         ; |ControlUnit|ALU_op        ;
-+--------------------+-----------+---------------+----------------------+------------------------+------------+----------------------------+
++--------------------------------------------------------------------------------------------------------------------------------------------------+
+; Multiplexer Restructuring Statistics (Restructuring Performed)                                                                                   ;
++--------------------+-----------+---------------+----------------------+------------------------+------------+------------------------------------+
+; Multiplexer Inputs ; Bus Width ; Baseline Area ; Area if Restructured ; Saving if Restructured ; Registered ; Example Multiplexer Output         ;
++--------------------+-----------+---------------+----------------------+------------------------+------------+------------------------------------+
+; 3:1                ; 15 bits   ; 30 LEs        ; 30 LEs               ; 0 LEs                  ; No         ; |CPU|ArithmeticLogicUnit:ALU|Mux15 ;
+; 16:1               ; 16 bits   ; 160 LEs       ; 160 LEs              ; 0 LEs                  ; No         ; |CPU|GPReg_File:Reg_File|Mux12     ;
+; 7:1                ; 2 bits    ; 8 LEs         ; 8 LEs                ; 0 LEs                  ; No         ; |CPU|ControlUnit:CU|ALU_op         ;
+; 19:1               ; 7 bits    ; 84 LEs        ; 84 LEs               ; 0 LEs                  ; No         ; |CPU|MUX_4x1:MUX2_ALU|Mux14        ;
+; 18:1               ; 9 bits    ; 108 LEs       ; 108 LEs              ; 0 LEs                  ; No         ; |CPU|MUX_4x1:MUX2_ALU|Mux3         ;
+; 11:1               ; 10 bits   ; 70 LEs        ; 70 LEs               ; 0 LEs                  ; No         ; |CPU|ArithmeticLogicUnit:ALU|Mux4  ;
+; 11:1               ; 4 bits    ; 28 LEs        ; 28 LEs               ; 0 LEs                  ; No         ; |CPU|ArithmeticLogicUnit:ALU|Mux14 ;
++--------------------+-----------+---------------+----------------------+------------------------+------------+------------------------------------+
+
+
++---------------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: Top-level Entity: |CPU ;
++----------------+-------+--------------------------------------------+
+; Parameter Name ; Value ; Type                                       ;
++----------------+-------+--------------------------------------------+
+; DATA_WIDTH     ; 16    ; Signed Integer                             ;
++----------------+-------+--------------------------------------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++-----------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: SignExtent:SignExt ;
++----------------+-------+----------------------------------------+
+; Parameter Name ; Value ; Type                                   ;
++----------------+-------+----------------------------------------+
+; data_width     ; 16    ; Signed Integer                         ;
++----------------+-------+----------------------------------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++--------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: MUX_2x1:MUX_Rs2 ;
++----------------+-------+-------------------------------------+
+; Parameter Name ; Value ; Type                                ;
++----------------+-------+-------------------------------------+
+; data_width     ; 4     ; Signed Integer                      ;
++----------------+-------+-------------------------------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++------------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: GPReg_File:Reg_File ;
++----------------+-------+-----------------------------------------+
+; Parameter Name ; Value ; Type                                    ;
++----------------+-------+-----------------------------------------+
+; data_width     ; 16    ; Signed Integer                          ;
+; reg_addr_width ; 4     ; Signed Integer                          ;
++----------------+-------+-----------------------------------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++--------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: MUX_2x1:MUX_MoR ;
++----------------+-------+-------------------------------------+
+; Parameter Name ; Value ; Type                                ;
++----------------+-------+-------------------------------------+
+; data_width     ; 16    ; Signed Integer                      ;
++----------------+-------+-------------------------------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++----------------------------------------------------------+
+; Parameter Settings for User Entity Instance: Reg:MDR_Reg ;
++----------------+-------+---------------------------------+
+; Parameter Name ; Value ; Type                            ;
++----------------+-------+---------------------------------+
+; data_width     ; 16    ; Signed Integer                  ;
++----------------+-------+---------------------------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++---------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: MUX_2x1:MUX1_ALU ;
++----------------+-------+--------------------------------------+
+; Parameter Name ; Value ; Type                                 ;
++----------------+-------+--------------------------------------+
+; data_width     ; 16    ; Signed Integer                       ;
++----------------+-------+--------------------------------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++---------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: MUX_4x1:MUX2_ALU ;
++----------------+-------+--------------------------------------+
+; Parameter Name ; Value ; Type                                 ;
++----------------+-------+--------------------------------------+
+; data_width     ; 16    ; Signed Integer                       ;
++----------------+-------+--------------------------------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++----------------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: ArithmeticLogicUnit:ALU ;
++----------------+-------+---------------------------------------------+
+; Parameter Name ; Value ; Type                                        ;
++----------------+-------+---------------------------------------------+
+; data_width     ; 16    ; Signed Integer                              ;
++----------------+-------+---------------------------------------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++----------------------------------------------------------+
+; Parameter Settings for User Entity Instance: Reg:ALU_Reg ;
++----------------+-------+---------------------------------+
+; Parameter Name ; Value ; Type                            ;
++----------------+-------+---------------------------------+
+; data_width     ; 16    ; Signed Integer                  ;
++----------------+-------+---------------------------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++-------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: MUX_2x1:MUX_PC ;
++----------------+-------+------------------------------------+
+; Parameter Name ; Value ; Type                               ;
++----------------+-------+------------------------------------+
+; data_width     ; 16    ; Signed Integer                     ;
++----------------+-------+------------------------------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++---------------------------------------------------------+
+; Parameter Settings for User Entity Instance: Reg:PC_Reg ;
++----------------+-------+--------------------------------+
+; Parameter Name ; Value ; Type                           ;
++----------------+-------+--------------------------------+
+; data_width     ; 16    ; Signed Integer                 ;
++----------------+-------+--------------------------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++---------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: MUX_2x1:MUX_IorD ;
++----------------+-------+--------------------------------------+
+; Parameter Name ; Value ; Type                                 ;
++----------------+-------+--------------------------------------+
+; data_width     ; 16    ; Signed Integer                       ;
++----------------+-------+--------------------------------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++------------------------------------------+
+; Port Connectivity Checks: "Reg:ALU_Reg"  ;
++--------+-------+----------+--------------+
+; Port   ; Type  ; Severity ; Details      ;
++--------+-------+----------+--------------+
+; enable ; Input ; Info     ; Stuck at VCC ;
++--------+-------+----------+--------------+
+
+
++----------------------------------------------+
+; Port Connectivity Checks: "MUX_4x1:MUX2_ALU" ;
++-----------+-------+----------+---------------+
+; Port      ; Type  ; Severity ; Details       ;
++-----------+-------+----------+---------------+
+; i1[15..1] ; Input ; Info     ; Stuck at GND  ;
+; i1[0]     ; Input ; Info     ; Stuck at VCC  ;
+; i3        ; Input ; Info     ; Stuck at GND  ;
++-----------+-------+----------+---------------+
+
+
++------------------------------------------+
+; Port Connectivity Checks: "Reg:MDR_Reg"  ;
++--------+-------+----------+--------------+
+; Port   ; Type  ; Severity ; Details      ;
++--------+-------+----------+--------------+
+; enable ; Input ; Info     ; Stuck at VCC ;
++--------+-------+----------+--------------+
 
 
 +-----------------------------------------------------+
@@ -275,20 +480,27 @@ Encoding Type:  One-Hot
 +-----------------------+-----------------------------+
 ; Type                  ; Count                       ;
 +-----------------------+-----------------------------+
-; arriav_ff             ; 8                           ;
-;     CLR               ; 8                           ;
-; arriav_lcell_comb     ; 29                          ;
-;     normal            ; 29                          ;
-;         1 data inputs ; 3                           ;
-;         2 data inputs ; 3                           ;
-;         3 data inputs ; 1                           ;
-;         4 data inputs ; 6                           ;
-;         5 data inputs ; 12                          ;
-;         6 data inputs ; 4                           ;
-; boundary_port         ; 28                          ;
+; arriav_ff             ; 328                         ;
+;     CLR               ; 40                          ;
+;     ENA CLR           ; 272                         ;
+;     ENA CLR SLD       ; 16                          ;
+; arriav_lcell_comb     ; 493                         ;
+;     arith             ; 50                          ;
+;         0 data inputs ; 2                           ;
+;         5 data inputs ; 48                          ;
+;     extend            ; 8                           ;
+;         7 data inputs ; 8                           ;
+;     normal            ; 435                         ;
+;         0 data inputs ; 1                           ;
+;         2 data inputs ; 22                          ;
+;         3 data inputs ; 72                          ;
+;         4 data inputs ; 30                          ;
+;         5 data inputs ; 85                          ;
+;         6 data inputs ; 225                         ;
+; boundary_port         ; 61                          ;
 ;                       ;                             ;
-; Max LUT depth         ; 2.00                        ;
-; Average LUT depth     ; 1.44                        ;
+; Max LUT depth         ; 11.00                       ;
+; Average LUT depth     ; 8.41                        ;
 +-----------------------+-----------------------------+
 
 
@@ -297,7 +509,7 @@ Encoding Type:  One-Hot
 +----------------+--------------+
 ; Partition Name ; Elapsed Time ;
 +----------------+--------------+
-; Top            ; 00:00:00     ;
+; Top            ; 00:00:02     ;
 +----------------+--------------+
 
 
@@ -307,10 +519,19 @@ Encoding Type:  One-Hot
 Info: *******************************************************************
 Info: Running Quartus Prime Analysis & Synthesis
     Info: Version 19.1.0 Build 670 09/22/2019 SJ Lite Edition
-    Info: Processing started: Sun Jun 06 00:33:03 2021
+    Info: Processing started: Thu Jun 10 16:37:27 2021
 Info: Command: quartus_map --read_settings_files=on --write_settings_files=off CPU -c CPU
 Warning (18236): Number of processors has not been specified which may cause overloading on shared machines.  Set the global assignment NUM_PARALLEL_PROCESSORS in your QSF to an appropriate value for best performance.
 Info (20030): Parallel compilation is enabled and will use 4 of the 4 processors detected
+Info (12021): Found 2 design units, including 1 entities, in source file signextent.vhd
+    Info (12022): Found design unit 1: SignExtent-dataflow File: C:/Users/idman/Desktop/RISC-V/CPU/SignExtent.vhd Line: 18
+    Info (12023): Found entity 1: SignExtent File: C:/Users/idman/Desktop/RISC-V/CPU/SignExtent.vhd Line: 4
+Info (12021): Found 2 design units, including 1 entities, in source file testbench_files/arithmeticlogicunit_tb.vhd
+    Info (12022): Found design unit 1: ArithmeticLogicUnit_TB-TB File: C:/Users/idman/Desktop/RISC-V/CPU/TestBench_files/ArithmeticLogicUnit_TB.vhd Line: 9
+    Info (12023): Found entity 1: ArithmeticLogicUnit_TB File: C:/Users/idman/Desktop/RISC-V/CPU/TestBench_files/ArithmeticLogicUnit_TB.vhd Line: 6
+Info (12021): Found 2 design units, including 1 entities, in source file arithmeticlogicunit.vhd
+    Info (12022): Found design unit 1: ArithmeticLogicUnit-Behavioral File: C:/Users/idman/Desktop/RISC-V/CPU/ArithmeticLogicUnit.vhd Line: 29
+    Info (12023): Found entity 1: ArithmeticLogicUnit File: C:/Users/idman/Desktop/RISC-V/CPU/ArithmeticLogicUnit.vhd Line: 7
 Info (12021): Found 2 design units, including 1 entities, in source file instructionregister.vhd
     Info (12022): Found design unit 1: InstructionRegister-RTL File: C:/Users/idman/Desktop/RISC-V/CPU/InstructionRegister.vhd Line: 21
     Info (12023): Found entity 1: InstructionRegister File: C:/Users/idman/Desktop/RISC-V/CPU/InstructionRegister.vhd Line: 4
@@ -331,14 +552,33 @@ Info (12021): Found 1 design units, including 0 entities, in source file cpu_lib
 Info (12021): Found 2 design units, including 1 entities, in source file opcodedecoder.vhd
     Info (12022): Found design unit 1: OpcodeDecoder-RTL File: C:/Users/idman/Desktop/RISC-V/CPU/OpcodeDecoder.vhd Line: 16
     Info (12023): Found entity 1: OpcodeDecoder File: C:/Users/idman/Desktop/RISC-V/CPU/OpcodeDecoder.vhd Line: 6
-Warning (12019): Can't analyze file -- file TestBench_files/OpcodeDecoder.vhd is missing
 Info (12021): Found 2 design units, including 1 entities, in source file testbench_files/opcodedecoder_tb.vhd
     Info (12022): Found design unit 1: OpcodeDecoder_tb-testbench File: C:/Users/idman/Desktop/RISC-V/CPU/TestBench_files/OpcodeDecoder_tb.vhd Line: 8
     Info (12023): Found entity 1: OpcodeDecoder_tb File: C:/Users/idman/Desktop/RISC-V/CPU/TestBench_files/OpcodeDecoder_tb.vhd Line: 5
 Info (12021): Found 2 design units, including 1 entities, in source file testbench_files/controlunit_tb.vhd
     Info (12022): Found design unit 1: ControlUnit_tb-Testbench File: C:/Users/idman/Desktop/RISC-V/CPU/TestBench_files/ControlUnit_tb.vhd Line: 9
     Info (12023): Found entity 1: ControlUnit_tb File: C:/Users/idman/Desktop/RISC-V/CPU/TestBench_files/ControlUnit_tb.vhd Line: 6
-Info (12127): Elaborating entity "ControlUnit" for the top level hierarchy
+Info (12021): Found 2 design units, including 1 entities, in source file cpu.vhd
+    Info (12022): Found design unit 1: CPU-structural File: C:/Users/idman/Desktop/RISC-V/CPU/CPU.vhd Line: 26
+    Info (12023): Found entity 1: CPU File: C:/Users/idman/Desktop/RISC-V/CPU/CPU.vhd Line: 6
+Info (12021): Found 2 design units, including 1 entities, in source file mux_2x1.vhd
+    Info (12022): Found design unit 1: MUX_2x1-dataflow File: C:/Users/idman/Desktop/RISC-V/CPU/MUX_2x1.vhd Line: 19
+    Info (12023): Found entity 1: MUX_2x1 File: C:/Users/idman/Desktop/RISC-V/CPU/MUX_2x1.vhd Line: 4
+Info (12021): Found 2 design units, including 1 entities, in source file reg.vhd
+    Info (12022): Found design unit 1: Reg-behavioral File: C:/Users/idman/Desktop/RISC-V/CPU/Reg.vhd Line: 21
+    Info (12023): Found entity 1: Reg File: C:/Users/idman/Desktop/RISC-V/CPU/Reg.vhd Line: 4
+Info (12021): Found 2 design units, including 1 entities, in source file mux_4x1.vhd
+    Info (12022): Found design unit 1: MUX_4x1-dataflow File: C:/Users/idman/Desktop/RISC-V/CPU/MUX_4x1.vhd Line: 21
+    Info (12023): Found entity 1: MUX_4x1 File: C:/Users/idman/Desktop/RISC-V/CPU/MUX_4x1.vhd Line: 4
+Info (12127): Elaborating entity "CPU" for the top level hierarchy
+Warning (10541): VHDL Signal Declaration warning at CPU.vhd(19): used implicit default value for signal "i_data" because signal was never assigned a value or an explicit default value. Use of implicit default value may introduce unintended design optimizations. File: C:/Users/idman/Desktop/RISC-V/CPU/CPU.vhd Line: 19
+Info (12129): Elaborating entity "InstructionRegister" using architecture "A:rtl" for hierarchy "InstructionRegister:IR" File: C:/Users/idman/Desktop/RISC-V/CPU/CPU.vhd Line: 73
+Info (12129): Elaborating entity "SignExtent" using architecture "A:dataflow" for hierarchy "SignExtent:SignExt" File: C:/Users/idman/Desktop/RISC-V/CPU/CPU.vhd Line: 75
+Info (12129): Elaborating entity "MUX_2x1" using architecture "A:dataflow" for hierarchy "MUX_2x1:MUX_Rs2" File: C:/Users/idman/Desktop/RISC-V/CPU/CPU.vhd Line: 77
+Info (12129): Elaborating entity "GPReg_File" using architecture "A:rtl" for hierarchy "GPReg_File:Reg_File" File: C:/Users/idman/Desktop/RISC-V/CPU/CPU.vhd Line: 79
+Info (12129): Elaborating entity "MUX_2x1" using architecture "A:dataflow" for hierarchy "MUX_2x1:MUX_MoR" File: C:/Users/idman/Desktop/RISC-V/CPU/CPU.vhd Line: 81
+Info (12129): Elaborating entity "Reg" using architecture "A:behavioral" for hierarchy "Reg:MDR_Reg" File: C:/Users/idman/Desktop/RISC-V/CPU/CPU.vhd Line: 83
+Info (12129): Elaborating entity "ControlUnit" using architecture "A:rtl" for hierarchy "ControlUnit:CU" File: C:/Users/idman/Desktop/RISC-V/CPU/CPU.vhd Line: 85
 Warning (10492): VHDL Process Statement warning at ControlUnit.vhd(112): signal "Operation" is read inside the Process Statement but isn't in the Process Statement's sensitivity list File: C:/Users/idman/Desktop/RISC-V/CPU/ControlUnit.vhd Line: 112
 Warning (10492): VHDL Process Statement warning at ControlUnit.vhd(124): signal "Operation" is read inside the Process Statement but isn't in the Process Statement's sensitivity list File: C:/Users/idman/Desktop/RISC-V/CPU/ControlUnit.vhd Line: 124
 Warning (10492): VHDL Process Statement warning at ControlUnit.vhd(128): signal "Operation" is read inside the Process Statement but isn't in the Process Statement's sensitivity list File: C:/Users/idman/Desktop/RISC-V/CPU/ControlUnit.vhd Line: 128
@@ -360,19 +600,38 @@ Warning (10492): VHDL Process Statement warning at ControlUnit.vhd(269): signal 
 Warning (10492): VHDL Process Statement warning at ControlUnit.vhd(272): signal "Operation" is read inside the Process Statement but isn't in the Process Statement's sensitivity list File: C:/Users/idman/Desktop/RISC-V/CPU/ControlUnit.vhd Line: 272
 Warning (10492): VHDL Process Statement warning at ControlUnit.vhd(282): signal "Operation" is read inside the Process Statement but isn't in the Process Statement's sensitivity list File: C:/Users/idman/Desktop/RISC-V/CPU/ControlUnit.vhd Line: 282
 Warning (10492): VHDL Process Statement warning at ControlUnit.vhd(289): signal "Operation" is read inside the Process Statement but isn't in the Process Statement's sensitivity list File: C:/Users/idman/Desktop/RISC-V/CPU/ControlUnit.vhd Line: 289
-Info (12128): Elaborating entity "OpcodeDecoder" for hierarchy "OpcodeDecoder:OpDecoder" File: C:/Users/idman/Desktop/RISC-V/CPU/ControlUnit.vhd Line: 48
+Info (12128): Elaborating entity "OpcodeDecoder" for hierarchy "ControlUnit:CU|OpcodeDecoder:OpDecoder" File: C:/Users/idman/Desktop/RISC-V/CPU/ControlUnit.vhd Line: 48
+Info (12129): Elaborating entity "MUX_4x1" using architecture "A:dataflow" for hierarchy "MUX_4x1:MUX2_ALU" File: C:/Users/idman/Desktop/RISC-V/CPU/CPU.vhd Line: 93
+Info (12129): Elaborating entity "ArithmeticLogicUnit" using architecture "A:behavioral" for hierarchy "ArithmeticLogicUnit:ALU" File: C:/Users/idman/Desktop/RISC-V/CPU/CPU.vhd Line: 95
+Warning (13024): Output pins are stuck at VCC or GND
+    Warning (13410): Pin "i_data[0]" is stuck at GND File: C:/Users/idman/Desktop/RISC-V/CPU/CPU.vhd Line: 19
+    Warning (13410): Pin "i_data[1]" is stuck at GND File: C:/Users/idman/Desktop/RISC-V/CPU/CPU.vhd Line: 19
+    Warning (13410): Pin "i_data[2]" is stuck at GND File: C:/Users/idman/Desktop/RISC-V/CPU/CPU.vhd Line: 19
+    Warning (13410): Pin "i_data[3]" is stuck at GND File: C:/Users/idman/Desktop/RISC-V/CPU/CPU.vhd Line: 19
+    Warning (13410): Pin "i_data[4]" is stuck at GND File: C:/Users/idman/Desktop/RISC-V/CPU/CPU.vhd Line: 19
+    Warning (13410): Pin "i_data[5]" is stuck at GND File: C:/Users/idman/Desktop/RISC-V/CPU/CPU.vhd Line: 19
+    Warning (13410): Pin "i_data[6]" is stuck at GND File: C:/Users/idman/Desktop/RISC-V/CPU/CPU.vhd Line: 19
+    Warning (13410): Pin "i_data[7]" is stuck at GND File: C:/Users/idman/Desktop/RISC-V/CPU/CPU.vhd Line: 19
+    Warning (13410): Pin "i_data[8]" is stuck at GND File: C:/Users/idman/Desktop/RISC-V/CPU/CPU.vhd Line: 19
+    Warning (13410): Pin "i_data[9]" is stuck at GND File: C:/Users/idman/Desktop/RISC-V/CPU/CPU.vhd Line: 19
+    Warning (13410): Pin "i_data[10]" is stuck at GND File: C:/Users/idman/Desktop/RISC-V/CPU/CPU.vhd Line: 19
+    Warning (13410): Pin "i_data[11]" is stuck at GND File: C:/Users/idman/Desktop/RISC-V/CPU/CPU.vhd Line: 19
+    Warning (13410): Pin "i_data[12]" is stuck at GND File: C:/Users/idman/Desktop/RISC-V/CPU/CPU.vhd Line: 19
+    Warning (13410): Pin "i_data[13]" is stuck at GND File: C:/Users/idman/Desktop/RISC-V/CPU/CPU.vhd Line: 19
+    Warning (13410): Pin "i_data[14]" is stuck at GND File: C:/Users/idman/Desktop/RISC-V/CPU/CPU.vhd Line: 19
+    Warning (13410): Pin "i_data[15]" is stuck at GND File: C:/Users/idman/Desktop/RISC-V/CPU/CPU.vhd Line: 19
 Info (286030): Timing-Driven Synthesis is running
 Info (17049): 1 registers lost all their fanouts during netlist optimizations.
 Info (16010): Generating hard_block partition "hard_block:auto_generated_inst"
     Info (16011): Adding 0 node(s), including 0 DDIO, 0 PLL, 0 transceiver and 0 LCELL
-Info (21057): Implemented 55 device resources after synthesis - the final resource count might be different
-    Info (21058): Implemented 6 input pins
-    Info (21059): Implemented 22 output pins
-    Info (21061): Implemented 27 logic cells
-Info: Quartus Prime Analysis & Synthesis was successful. 0 errors, 23 warnings
-    Info: Peak virtual memory: 4846 megabytes
-    Info: Processing ended: Sun Jun 06 00:33:14 2021
-    Info: Elapsed time: 00:00:11
-    Info: Total CPU time (on all processors): 00:00:27
+Info (21057): Implemented 874 device resources after synthesis - the final resource count might be different
+    Info (21058): Implemented 18 input pins
+    Info (21059): Implemented 43 output pins
+    Info (21061): Implemented 813 logic cells
+Info: Quartus Prime Analysis & Synthesis was successful. 0 errors, 40 warnings
+    Info: Peak virtual memory: 4849 megabytes
+    Info: Processing ended: Thu Jun 10 16:37:41 2021
+    Info: Elapsed time: 00:00:14
+    Info: Total CPU time (on all processors): 00:00:30
 
 

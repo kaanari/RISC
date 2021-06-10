@@ -22,7 +22,7 @@ entity ControlUnit is
 			ALU_src1		: out std_logic;
 			ALU_src2		: out std_logic_vector(1 downto 0);
 			Jmp_enable	: out std_logic; -- Additional output of CU for indicating that operitons JZ or JNZ is executing
-			IorD		: out std_logic; -- Additional signal to select the next address (PC = '0' or Rs1 = '1')
+			IorD			: out std_logic; -- Additional signal to select the next address (PC = '0' or Rs1 = '1')
 			Cu_state 	: out std_logic_vector(3 downto 0)
 	);
 

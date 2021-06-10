@@ -1,5 +1,5 @@
 
-State Machine - |ControlUnit|currentState
+State Machine - |CPU|ControlUnit:CU|currentState
 Name currentState.WRITEBACK currentState.RTYPE currentState.MEM_ACCESS currentState.JNZTYPE currentState.JZTYPE currentState.JTYPE currentState.DECODE currentState.FETCH currentState.START 
 currentState.START 0 0 0 0 0 0 0 0 0 
 currentState.FETCH 0 0 0 0 0 0 0 1 1 
