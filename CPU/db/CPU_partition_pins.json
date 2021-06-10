@@ -68,15 +68,19 @@
 					"strict" : false
 				},
 				{
+					"name" : "Mem_write",
+					"strict" : false
+				},
+				{
+					"name" : "Mem_read",
+					"strict" : false
+				},
+				{
 					"name" : "address[15]",
 					"strict" : false
 				},
 				{
 					"name" : "CLK",
-					"strict" : false
-				},
-				{
-					"name" : "Mem_write",
 					"strict" : false
 				},
 				{

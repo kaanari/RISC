@@ -12,9 +12,10 @@ entity Memory is
 	port(
 			data_in			: in std_logic_vector((DATA_WIDTH-1) downto 0);
 			Mem_write		: in std_logic;
+			Mem_read			: in std_logic;
 			CLK				: in std_logic;
 			address			: in std_logic_vector((ADDRESS_WIDTH-1) downto 0);
-			data_out		: out std_logic_vector((DATA_WIDTH-1) downto 0)
+			data_out			: out std_logic_vector((DATA_WIDTH-1) downto 0)
 		 );
 
 
@@ -35,6 +36,7 @@ architecture Behavioral of Memory is
 										others => (others => '0'));
 										
 	signal read_address_temp : std_logic_vector((DATA_WIDTH-1) downto 0);
+	signal data_out_temp		 : std_logic_vector((DATA_WIDTH-1) downto 0);
 
 begin
 
@@ -46,15 +48,15 @@ begin
 			if Mem_write = '1' then
 				RAM(to_integer(unsigned(address))) <= data_in;
 			end if;
-			
 
-			data_out <= RAM(to_integer(unsigned(address)));
-			
+			read_address_temp <= address;
+	
 		end if;
 
 	end process;
 	
-	
-			
+	data_out_temp <= RAM(to_integer(unsigned(read_address_temp)));
+	-- High impedance when Mem_read inactive
+	data_out <= (others => 'Z') when Mem_read = '0' or Mem_write = '1' else data_out_temp;
 
 end Behavioral;
