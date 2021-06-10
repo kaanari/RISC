@@ -102,7 +102,7 @@ begin
 	
 	MUX_IorD: entity work.MUX_2x1(dataflow) generic map(DATA_WIDTH) port map(PC,data_Rs1,IorD,i_address);
 	
-	
+	i_data <= data_Rs2;
 	
 	
 	

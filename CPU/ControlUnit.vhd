@@ -62,7 +62,7 @@ begin
 	
 	end process;
 	
-	control_signals: process(currentState)
+	control_signals: process(currentState, Operation)
 	begin
 	
 		case currentState is 
