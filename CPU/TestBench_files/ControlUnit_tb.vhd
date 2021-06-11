@@ -61,9 +61,6 @@ architecture Testbench of ControlUnit_tb is
 	type array2bit is array (TOTAL_CASE downto 0) of std_logic_vector(1 downto 0);
 	type array1bit is array (TOTAL_CASE downto 0) of std_logic;
 	
-	--OpCode(FETCH,DECODE...)   TABLO EKLEEEEEEEGGG!!!!!!
-	
-	
 	type array2D is array (0 to 15, 0 to 3) of std_logic_vector(3 downto 0); -- 16 opcode and max. 4 states of each 
 	constant OpCodeSteps : array2D := (	("0001","0010","0111","1000"), ("0001","0010","0111","1000"), 
 													("0001","0010","0111","1000"), ("0001","0010","0111","1000"), 
@@ -83,6 +80,9 @@ architecture Testbench of ControlUnit_tb is
 
 	signal check_enable : std_logic := '0'; -- Check process should perform only when one of the 16 OpCodes occur.
 	signal state_signal : integer range 0 to 100 := 1;
+
+	signal 	instruction : STRING (1 TO 7);
+
 	
 begin
 
@@ -281,22 +281,49 @@ begin
 		end loop;
 		check_enable <= '0';
 		
-		--assert data_Rs1 = x"0000" and data_Rs2 = x"0000"
-		--report "There are error in case "& integer'image(case_num)& " !" 
-		--severity error;
-		--case_num := case_num + 1;
-	
 		finish_flag <= '1';
 		wait;
-	
-	
-	
-	
-	
-	
-	
-	
+		
 	end process;
+
+	IDecoder : PROCESS (OpCode)
+	BEGIN
+		CASE OpCode IS
+			WHEN ADD => 
+				instruction <= "ADD    ";
+			WHEN SUBx => 
+				instruction <= "SUB    ";
+			WHEN ANDx => 
+				instruction <= "AND    ";
+			WHEN ORx => 
+				instruction <= "OR     ";
+			WHEN NOTx => 
+				instruction <= "NOT    ";
+			WHEN XORx => 
+				instruction <= "XOR    ";
+			WHEN CMP => 
+				instruction <= "CMP    ";
+			WHEN SHL => 
+				instruction <= "SHL    ";
+			WHEN SHR => 
+				instruction <= "SHR    ";
+			WHEN LOAD => 
+				instruction <= "LOAD   ";
+			WHEN STORE => 
+				instruction <= "STORE  ";
+			WHEN JUMP => 
+				instruction <= "JUMP   ";
+			WHEN NOP => 
+				instruction <= "NOP    ";
+			WHEN JZ => 
+				instruction <= "JZ     ";
+			WHEN JNZ => 
+				instruction <= "JNZ    ";
+			WHEN LOADI => 
+				instruction <= "LOADI  ";			
+			WHEN OTHERS => instruction <= "       ";
+		END CASE;
+	END PROCESS;
 
 
 

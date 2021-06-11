@@ -49,6 +49,8 @@ begin
 				RAM(to_integer(unsigned(address))) <= data_in;
 			end if;
 
+			--read_address_temp <= address;
+	
 		end if;
 
 	end process;

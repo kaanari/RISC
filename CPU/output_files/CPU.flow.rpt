@@ -1,6 +1,6 @@
 Flow report for CPU
-Thu Jun 10 19:59:24 2021
-Quartus Prime Version 19.1.0 Build 670 09/22/2019 SJ Lite Edition
+Fri Jun 11 22:07:13 2021
+Quartus Prime Version 19.1.0 Build 670 09/22/2019 SJ Standard Edition
 
 
 ---------------------
@@ -38,29 +38,29 @@ https://fpgasoftware.intel.com/eula.
 
 
 
-+-------------------------------------------------------------------------------+
-; Flow Summary                                                                  ;
-+---------------------------------+---------------------------------------------+
-; Flow Status                     ; Successful - Thu Jun 10 19:59:24 2021       ;
-; Quartus Prime Version           ; 19.1.0 Build 670 09/22/2019 SJ Lite Edition ;
-; Revision Name                   ; CPU                                         ;
-; Top-level Entity Name           ; Memory                                      ;
-; Family                          ; Cyclone V                                   ;
-; Device                          ; 5CSEMA5F31C6                                ;
-; Timing Models                   ; Final                                       ;
-; Logic utilization (in ALMs)     ; N/A                                         ;
-; Total registers                 ; 3                                           ;
-; Total pins                      ; 51                                          ;
-; Total virtual pins              ; 0                                           ;
-; Total block memory bits         ; 1,048,576                                   ;
-; Total DSP Blocks                ; 0                                           ;
-; Total HSSI RX PCSs              ; 0                                           ;
-; Total HSSI PMA RX Deserializers ; 0                                           ;
-; Total HSSI TX PCSs              ; 0                                           ;
-; Total HSSI PMA TX Serializers   ; 0                                           ;
-; Total PLLs                      ; 0                                           ;
-; Total DLLs                      ; 0                                           ;
-+---------------------------------+---------------------------------------------+
++-----------------------------------------------------------------------------------+
+; Flow Summary                                                                      ;
++---------------------------------+-------------------------------------------------+
+; Flow Status                     ; Successful - Fri Jun 11 22:07:13 2021           ;
+; Quartus Prime Version           ; 19.1.0 Build 670 09/22/2019 SJ Standard Edition ;
+; Revision Name                   ; CPU                                             ;
+; Top-level Entity Name           ; CPU                                             ;
+; Family                          ; Cyclone V                                       ;
+; Device                          ; 5CSEMA5F31C6                                    ;
+; Timing Models                   ; Final                                           ;
+; Logic utilization (in ALMs)     ; N/A                                             ;
+; Total registers                 ; 344                                             ;
+; Total pins                      ; 61                                              ;
+; Total virtual pins              ; 0                                               ;
+; Total block memory bits         ; 0                                               ;
+; Total DSP Blocks                ; 0                                               ;
+; Total HSSI RX PCSs              ; 0                                               ;
+; Total HSSI PMA RX Deserializers ; 0                                               ;
+; Total HSSI TX PCSs              ; 0                                               ;
+; Total HSSI PMA TX Serializers   ; 0                                               ;
+; Total PLLs                      ; 0                                               ;
+; Total DLLs                      ; 0                                               ;
++---------------------------------+-------------------------------------------------+
 
 
 +-----------------------------------------+
@@ -68,7 +68,7 @@ https://fpgasoftware.intel.com/eula.
 +-------------------+---------------------+
 ; Option            ; Setting             ;
 +-------------------+---------------------+
-; Start date & time ; 06/10/2021 19:59:12 ;
+; Start date & time ; 06/11/2021 22:06:53 ;
 ; Main task         ; Compilation         ;
 ; Revision Name     ; CPU                 ;
 +-------------------+---------------------+
@@ -79,7 +79,7 @@ https://fpgasoftware.intel.com/eula.
 +--------------------------------------+--------------------------------------------+---------------+-------------+-----------------------------------+
 ; Assignment Name                      ; Value                                      ; Default Value ; Entity Name ; Section Id                        ;
 +--------------------------------------+--------------------------------------------+---------------+-------------+-----------------------------------+
-; COMPILER_SIGNATURE_ID                ; 150461130037514.162334435213236            ; --            ; --          ; --                                ;
+; COMPILER_SIGNATURE_ID                ; 121370288144.162343841211000               ; --            ; --          ; --                                ;
 ; EDA_DESIGN_INSTANCE_NAME             ; NA                                         ; --            ; --          ; InstructionRegister_TB            ;
 ; EDA_DESIGN_INSTANCE_NAME             ; NA                                         ; --            ; --          ; ArithmeticLogicUnit_TB            ;
 ; EDA_DESIGN_INSTANCE_NAME             ; NA                                         ; --            ; --          ; GPReg_File_TB                     ;
@@ -111,13 +111,12 @@ https://fpgasoftware.intel.com/eula.
 ; EDA_TIME_SCALE                       ; 1 ps                                       ; --            ; --          ; eda_simulation                    ;
 ; MAX_CORE_JUNCTION_TEMP               ; 85                                         ; --            ; --          ; --                                ;
 ; MIN_CORE_JUNCTION_TEMP               ; 0                                          ; --            ; --          ; --                                ;
-; PARTITION_COLOR                      ; -- (Not supported for targeted family)     ; --            ; Memory      ; Top                               ;
-; PARTITION_FITTER_PRESERVATION_LEVEL  ; -- (Not supported for targeted family)     ; --            ; Memory      ; Top                               ;
-; PARTITION_NETLIST_TYPE               ; -- (Not supported for targeted family)     ; --            ; Memory      ; Top                               ;
+; PARTITION_COLOR                      ; -- (Not supported for targeted family)     ; --            ; --          ; Top                               ;
+; PARTITION_FITTER_PRESERVATION_LEVEL  ; -- (Not supported for targeted family)     ; --            ; --          ; Top                               ;
+; PARTITION_NETLIST_TYPE               ; -- (Not supported for targeted family)     ; --            ; --          ; Top                               ;
 ; POWER_BOARD_THERMAL_MODEL            ; None (CONSERVATIVE)                        ; --            ; --          ; --                                ;
 ; POWER_PRESET_COOLING_SOLUTION        ; 23 MM HEAT SINK WITH 200 LFPM AIRFLOW      ; --            ; --          ; --                                ;
 ; PROJECT_OUTPUT_DIRECTORY             ; output_files                               ; --            ; --          ; --                                ;
-; TOP_LEVEL_ENTITY                     ; Memory                                     ; CPU           ; --          ; --                                ;
 +--------------------------------------+--------------------------------------------+---------------+-------------+-----------------------------------+
 
 
@@ -126,8 +125,8 @@ https://fpgasoftware.intel.com/eula.
 +----------------------+--------------+-------------------------+---------------------+------------------------------------+
 ; Module Name          ; Elapsed Time ; Average Processors Used ; Peak Virtual Memory ; Total CPU Time (on all processors) ;
 +----------------------+--------------+-------------------------+---------------------+------------------------------------+
-; Analysis & Synthesis ; 00:00:12     ; 1.0                     ; 4880 MB             ; 00:00:27                           ;
-; Total                ; 00:00:12     ; --                      ; --                  ; 00:00:27                           ;
+; Analysis & Synthesis ; 00:00:37     ; 1.0                     ; 4894 MB             ; 00:00:33                           ;
+; Total                ; 00:00:37     ; --                      ; --                  ; 00:00:33                           ;
 +----------------------+--------------+-------------------------+---------------------+------------------------------------+
 
 
@@ -136,7 +135,7 @@ https://fpgasoftware.intel.com/eula.
 +----------------------+------------------+------------+------------+----------------+
 ; Module Name          ; Machine Hostname ; OS Name    ; OS Version ; Processor type ;
 +----------------------+------------------+------------+------------+----------------+
-; Analysis & Synthesis ; DESKTOP-7BR3O72  ; Windows 10 ; 10.0       ; x86_64         ;
+; Analysis & Synthesis ; KAANARIFF5B      ; Windows 10 ; 10.0       ; x86_64         ;
 +----------------------+------------------+------------+------------+----------------+
 
 

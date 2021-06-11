@@ -32,7 +32,7 @@ architecture Behavioral of Memory is
 										8 	=> x"0462", 9 	=> x"A054",
 										10 => x"B003", 11 => x"0000",
 										12 => x"0000", 13 => x"5536",
-										14 => x"4250", 15 => x"9820",
+										14 => x"4205", 15 => x"9820",
 										others => (others => '0'));
 										
 	signal read_address_temp : std_logic_vector((DATA_WIDTH-1) downto 0);

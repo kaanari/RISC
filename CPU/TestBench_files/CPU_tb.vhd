@@ -1,5 +1,6 @@
 library IEEE;
 use IEEE.std_logic_1164.all;
+use IEEE.numeric_std.all;
 use work.CPU_library.all;
 
 entity CPU_tb is
@@ -8,23 +9,26 @@ end CPU_tb;
 architecture testbench of CPU_tb is
 	
 	constant DATA_WIDTH 	: integer := 16;
-	constant ADDRESS_WIDTH: integer := 16;
+	constant ADDRESS_WIDTH	: integer := 16;
 	constant clk_period 	: time := 100 ps;
 	
-	signal finishFlag 	: std_logic := '0';
+	signal finishFlag 		: std_logic := '0';
 	
 	-- CPU Signals
-	signal instruction	: std_logic_vector((DATA_WIDTH-1) downto 0);
+	signal instruction		: std_logic_vector((DATA_WIDTH-1) downto 0);
 	signal CLK				: std_logic;
 	signal Reset 			: std_logic;
 	signal Mem_write		: std_logic;
-	signal Mem_read		: std_logic;
+	signal Mem_read			: std_logic;
 	signal i_address		: std_logic_vector((ADDRESS_WIDTH-1) downto 0);
 	signal i_data			: std_logic_vector((DATA_WIDTH-1) downto 0);
-	signal Cu_state		: std_logic_vector(3 downto 0);
+	signal Cu_state			: std_logic_vector(3 downto 0);
 	signal flags			: std_logic_vector(4 downto 0);		
 
-	
+	signal    instruction_str 	: STRING (1 TO 15) := "               ";
+
+
+
 begin
 	
 	-- Unit Under Test Portmap
@@ -51,17 +55,113 @@ begin
 	-- Simulation Process
 	Stimulus: process
 	begin
-	
+		-- Reset CPU
 		Reset <= '1';
 		wait for clk_period + clk_period/2;
 		Reset <= '0';
 		wait for clk_period*50;
-	
-	
+		-- No need to manually assign signals, CPU automatically reads from Block RAM
 		finishFlag <= '1';
 		wait;
 	
 	end process;
+
+IDecoder : PROCESS (instruction,cu_state)
+	variable 	strInst 	: STRING (1 TO 5);
+	variable 	RD 				: STRING (1 TO 2);
+	variable 	R1 				: STRING (1 TO 2);
+	variable 	R2 				: STRING (1 TO 3);
+	variable    strInstruction 	: STRING (1 TO 15);
+	variable 	temp 			: integer range 0 to 100;
+
+	BEGIN
+
+		RD 			:= "R"&Integer'image(to_integer((unsigned(instruction((DATA_WIDTH-5) downto (DATA_WIDTH-8))))));
+
+		R1 			:= "R"&Integer'image(to_integer((unsigned(instruction((DATA_WIDTH-9) downto (DATA_WIDTH-12))))));
+		
+		if to_integer((unsigned(instruction((DATA_WIDTH-13) downto (DATA_WIDTH-16))))) < 10 then
+			
+			R2 			:= "R"&Integer'image(to_integer((unsigned(instruction((DATA_WIDTH-13) downto (DATA_WIDTH-16)))))) &" ";
+
+		else
+			R2 			:= "R"&Integer'image(to_integer((unsigned(instruction((DATA_WIDTH-13) downto (DATA_WIDTH-16))))));
+		
+		end if;
+		
+		CASE instruction((DATA_WIDTH-1) downto (DATA_WIDTH-4)) IS
+			WHEN ADD => 
+				strInst := "ADD  ";
+				strInstruction := strInst & " " & RD & "," & R1 & "," & R2;
+			WHEN SUBx => 
+				strInst := "SUB  ";
+				strInstruction := strInst & " " & RD & "," & R1 & "," & R2;
+			WHEN ANDx => 
+				strInst := "AND  ";
+				strInstruction := strInst & " " & RD & "," & R1 & "," & R2;
+			WHEN ORx => 
+				strInst := "OR   ";
+				strInstruction := strInst & " " & RD & "," & R1 & "," & R2;
+			WHEN NOTx => 
+				strInst := "NOT  ";
+				strInstruction := strInst & " " & RD & "," & R2 & "   ";
+			WHEN XORx => 
+				strInst := "XOR  ";
+				strInstruction := strInst & " " & RD & "," & R1 & "," & R2;
+			WHEN CMP => 
+				strInst := "CMP  ";
+				strInstruction := strInst & " " & RD & "," & R1 & "," & R2;
+			WHEN SHL => 
+				strInst := "SHL  ";
+				strInstruction := strInst & " " & RD & "," & R2 & "   ";
+			WHEN SHR => 
+				strInst := "SHR  ";
+				strInstruction := strInst & " " & RD & "," & R2 & "   ";
+			WHEN LOAD => 
+				strInst := "LOAD ";
+				strInstruction := strInst & " " & RD & "," & R1 & "    ";
+			WHEN STORE => 
+				strInst := "STORE";
+				strInstruction := strInst & " " & R1 & "," & R2 & "   ";
+			WHEN JUMP => 
+				strInst := "JUMP ";
+				strInstruction := strInst & " " & Integer'image(to_integer(unsigned(instruction((DATA_WIDTH-9) downto (DATA_WIDTH-16))))) & "        ";
+			WHEN NOP => 
+				strInst := "NOP  ";
+				strInstruction := strInst & "          ";
+			WHEN JZ => 
+				strInst := "JZ   ";
+				strInstruction := strInst & " " & RD & " " & Integer'image(to_integer(unsigned(instruction((DATA_WIDTH-9) downto (DATA_WIDTH-16))))) & "     ";
+			WHEN JNZ => 
+				strInst := "JNZ  ";
+				strInstruction := strInst & " " & RD & " " & Integer'image(to_integer(unsigned(instruction((DATA_WIDTH-9) downto (DATA_WIDTH-16))))) & "     ";
+			WHEN LOADI => 
+				strInst := "LOADI";			
+
+				temp := to_integer(unsigned(instruction((DATA_WIDTH-9) downto (DATA_WIDTH-16))));
+				if temp > 9 then
+					strInstruction := strInst & " " & RD & " " & Integer'image(temp) & "    ";
+				
+				else
+					strInstruction := strInst & " " & RD & " " & Integer'image(temp) & "     ";
+			
+
+				end if;
+
+			WHEN OTHERS => 
+				strInst := "     ";
+				strInstruction := "               ";
+		END CASE;
+
+		if CU_state = "0001" then
+			instruction_str <= strInstruction;
+		else
+			
+			instruction_str <= "               ";
+		end if;
+		
+	END PROCESS;
+
 	
 
 end testbench;

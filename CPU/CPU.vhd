@@ -63,10 +63,11 @@ architecture structural of CPU is
 	signal ALU_result	: std_logic_vector((DATA_WIDTH-1) downto 0);
 	
 	signal PC_input 	: std_logic_vector((DATA_WIDTH-1) downto 0);
+
+	signal PC_Backup	: std_logic_vector((DATA_WIDTH-1) downto 0);
+	signal PC_ALU		: std_logic_vector((DATA_WIDTH-1) downto 0);
 	
-	
-	
-	
+	signal PC_ALU_sel	: std_logic;
 
 begin
 	
@@ -85,10 +86,9 @@ begin
 	CU: entity work.ControlUnit(RTL) port map(OpCode,CLK,Reset,MemtoReg,GPRF_wr,IR_write,Mem_write,Rs2_select,PC_Wcond,Mem_read,PC_write,PC_source,
 															ALU_op,ALU_src1,ALU_src2,Jmp_enable,IorD,Cu_state);
 											
-	
 	PC_enable <= PC_write OR (Jmp_enable AND (PC_Wcond XNOR ZeroFlag));
 	
-	MUX1_ALU: entity work.MUX_2x1(dataflow) generic map(DATA_WIDTH) port map(data_Rs1,PC,ALU_src1,ALU_in1);
+	MUX1_ALU: entity work.MUX_2x1(dataflow) generic map(DATA_WIDTH) port map(data_Rs1,PC_ALU,ALU_src1,ALU_in1);
 	
 	MUX2_ALU: entity work.MUX_4x1(dataflow) generic map(DATA_WIDTH) port map(data_Rs2,x"0001",Imm_ext,x"0000",ALU_src2,ALU_in2); 
 	
@@ -103,7 +103,10 @@ begin
 	MUX_IorD: entity work.MUX_2x1(dataflow) generic map(DATA_WIDTH) port map(PC,data_Rs1,IorD,i_address);
 	
 	i_data <= data_Rs2;
-	
+
+	PC_BACKUP_Reg: entity work.Reg(behavioral) generic map(DATA_WIDTH) port map(PC,CLK,Reset,PC_enable,PC_Backup);
+	PC_ALU_sel <= (not ALU_src2(0)) AND ALU_src2(1);
+	MUX_PC_ALU: entity work.MUX_2x1(dataflow) generic map(DATA_WIDTH) port map(PC,PC_Backup, PC_ALU_sel,PC_ALU);
 	
 	
 end structural;
