@@ -34,4 +34,4 @@ See also the list of [contributors](https://github.com/kaanari/RISC-V/graphs/con
 
 ## License
 
-This project is licensed under the GNU General Public License v3.0 - see the [LICENSE](https://github.com/kaanaritr/Coursera-GDrive/blob/master/LICENSE) file for details.
+This project is licensed under the GNU General Public License v3.0 - see the [LICENSE](https://github.com/kaanari/RISC-V/blob/master/LICENSE) file for details.
